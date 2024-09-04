@@ -1,0 +1,17 @@
+<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_91_5)">
+<mask id="mask0_91_5" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="14" height="14">
+<path d="M0.5 0.5H13.5V13.5H0.5V0.5Z" fill="white" stroke="white"/>
+</mask>
+<g mask="url(#mask0_91_5)">
+<path d="M1 1V5C1 7.12173 1.84285 9.15656 3.34315 10.6569C4.84344 12.1571 6.87827 13 9 13H13" stroke="#F2EFED" stroke-width="2" stroke-linecap="round"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_91_5">
+<rect width="14" height="14" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+<!-- 17/64/111 -->
+<!-- (item.subMenu.length - 1) * 47 + 17 -->

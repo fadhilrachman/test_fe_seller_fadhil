@@ -1,17 +1,23 @@
-// Protecting routes with next-auth
-// https://next-auth.js.org/configuration/nextjs#middleware
-// https://nextjs.org/docs/app/building-your-application/routing/middleware
+import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { url } from 'inspector';
 
-import NextAuth from 'next-auth';
-import authConfig from './auth.config';
+export function middleware(req: NextRequest) {
+  const cookieStore = cookies().get(process?.env?.COOKIE_NAME as string)?.value;
+  const currentPathname = req?.nextUrl.pathname;
 
-const { auth } = NextAuth(authConfig);
-
-export default auth((req) => {
-  if (!req.auth) {
-    const url = req.url.replace(req.nextUrl.pathname, '/');
-    return Response.redirect(url);
+  if (currentPathname == '/') {
+    return NextResponse.redirect(new URL('/signin', req.url));
   }
-});
 
-export const config = { matcher: ['/dashboard/:path*'] };
+  const pathAllowedUnSignin = ['/signin', '/forgot-password'];
+  if (pathAllowedUnSignin.includes(currentPathname) && cookieStore) {
+    return NextResponse.redirect(new URL('/dashboard', req.url));
+  }
+
+  const pathAfterSignin = ['/dashboard/*', '/master-data/*'];
+
+  if (pathAfterSignin.includes(currentPathname) && !cookieStore) {
+    return NextResponse.redirect(new URL('/sign-in', req.url));
+  }
+}

@@ -6,7 +6,7 @@ import NextTopLoader from 'nextjs-toploader';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { auth } from '@/auth';
-
+import { GeistSans } from 'geist/font/sans';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} overflow-hidden `}
+        className={`${GeistSans.className} overflow-hidden `}
         suppressHydrationWarning={true}
       >
         <NextTopLoader showSpinner={false} />

@@ -118,33 +118,87 @@ export const navItems: NavItem[] = [
     label: 'Dashboard'
   },
   {
-    title: 'User',
+    title: 'Pengumuman',
+    href: '/dashboard/announcement',
+    icon: 'announcement',
+    label: 'Dashboard'
+  },
+  {
+    title: 'Master Data',
     href: '/dashboard/user',
     icon: 'user',
-    label: 'user'
+    label: 'user',
+    subMenu: [
+      {
+        title: 'Divisi',
+        href: '/dashboard/division'
+      },
+      {
+        title: 'Karyawan',
+        href: '/dashboard/employees'
+      },
+      {
+        title: 'Operator',
+        href: '/dashboard/admin'
+      }
+    ]
   },
   {
-    title: 'Employee',
+    title: 'Manajemen Kehadiran',
     href: '/dashboard/employee',
     icon: 'employee',
+    label: 'employee',
+    subMenu: [
+      {
+        title: 'Absen',
+        href: '/dashboard/absent'
+      },
+      {
+        title: 'History Absent',
+        href: '/dashboard/absent'
+      },
+      {
+        title: 'Master Shifting',
+        href: '/dashboard/master-shifting'
+      },
+      {
+        title: 'Shifting',
+        href: '/dashboard/shifting'
+      },
+      {
+        title: 'Cuti',
+        href: '/dashboard/time-off'
+      }
+    ]
+  },
+  {
+    title: 'Log Aktifitas',
+    href: '/dashboard/log-activity',
+    icon: 'logActivity',
     label: 'employee'
-  },
-  {
-    title: 'Profile',
-    href: '/dashboard/profile',
-    icon: 'profile',
-    label: 'profile'
-  },
-  {
-    title: 'Kanban',
-    href: '/dashboard/kanban',
-    icon: 'kanban',
-    label: 'kanban'
-  },
-  {
-    title: 'Login',
-    href: '/',
-    icon: 'login',
-    label: 'login'
   }
+  // {
+  //   title: 'Employee',
+  //   href: '/dashboard/employee',
+  //   icon: 'employee',
+  //   label: 'employee'
+  // },
+  // {
+  //   title: 'Profile',
+  //   href: '/dashboard/profile',
+  //   icon: 'profile',
+  //   label: 'profile'
+  // },
+  // {
+  //   title: 'Kanban',
+  //   href: '/dashboard/kanban',
+  //   icon: 'kanban',
+  //   label: 'kanban'
+  // },
+  // {
+  //   title: 'Login',
+  //   href: '/',
+  //   icon: 'login',
+  //   label: 'login'
+  // }
 ];
