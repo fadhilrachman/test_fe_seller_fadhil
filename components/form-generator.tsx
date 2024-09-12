@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Form,
   FormControl,
@@ -18,6 +18,8 @@ import {
 import { Input } from './ui/input';
 import { Separator } from './ui/separator';
 import { Textarea } from './ui/textarea';
+import { TimePickerInput } from './ui/time-picker';
+import moment from 'moment';
 export interface DataFormType {
   // name:''
   label: string;
@@ -30,6 +32,7 @@ export interface DataFormType {
     | 'email'
     | 'subtitle'
     | 'title'
+    | 'timepicker'
     | 'fieldArray';
   name: string;
   placeholder?: string;
@@ -48,14 +51,15 @@ interface Props {
   data: DataFormType[];
   onSubmit: (params: any) => void;
   id: string;
+  grid?: string;
 }
-const FormGenerator = ({ form, data, onSubmit, id }: Props) => {
+const FormGenerator = ({ form, data, onSubmit, id, grid = '3' }: Props) => {
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         id={id}
-        className="mx-auto grid  grid-cols-3 gap-4 "
+        className={` grid  grid-cols-${grid} gap-4`}
       >
         {data.map((val) => {
           if (val.type == 'title') {
@@ -81,6 +85,54 @@ const FormGenerator = ({ form, data, onSubmit, id }: Props) => {
                           placeholder={val.placeholder}
                           {...field}
                         />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            );
+          }
+
+          if (val.type == 'timepicker') {
+            const [date, setDate] = useState<any>();
+
+            const minuteRef = React.useRef<HTMLInputElement>(null);
+            const hourRef = React.useRef<HTMLInputElement>(null);
+
+            useEffect(() => {
+              form.setValue(
+                val.name,
+                !date ? '00:00' : moment(date).format('HH:mm')
+              );
+            }, [date]);
+
+            return (
+              <div className={`col-span-${val.grid}`}>
+                <FormField
+                  control={form.control}
+                  name={val.name}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{val.label}</FormLabel>
+                      <FormControl>
+                        <div className="flex items-center space-x-2">
+                          <TimePickerInput
+                            picker="hours"
+                            date={date}
+                            ref={hourRef}
+                            onRightFocus={() => minuteRef.current?.focus()}
+                            setDate={setDate}
+                          />
+                          <span>:</span>{' '}
+                          <TimePickerInput
+                            picker="minutes"
+                            date={date}
+                            ref={minuteRef}
+                            onLeftFocus={() => hourRef.current?.focus()}
+                            setDate={setDate}
+                          />
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

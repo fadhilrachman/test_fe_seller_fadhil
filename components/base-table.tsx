@@ -38,7 +38,7 @@ const BaseTable = ({
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="uppercase">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
