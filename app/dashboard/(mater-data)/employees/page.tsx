@@ -46,24 +46,22 @@ export default async function page({ searchParams }: paramsProps) {
   const pageCount = Math.ceil(totalUsers / pageLimit);
   const employee: Employee[] = employeeRes.users;
   return (
-    <PageContainer>
-      <div className="space-y-4">
-        <Breadcrumbs items={breadcrumbItems} />
+    <div className="space-y-4">
+      <Breadcrumbs items={breadcrumbItems} />
 
-        <div className="flex items-start justify-between">
-          <Heading title={`Karyawan`} description="Manage Karyawan" />
+      <div className="flex items-start justify-between">
+        <Heading title={`Karyawan`} description="Manage Karyawan" />
 
-          <Link
-            href={'/dashboard/employee/new'}
-            className={cn(buttonVariants({ variant: 'default' }))}
-          >
-            <Plus className="mr-2 h-4 w-4" /> Add New
-          </Link>
-        </div>
-        <Separator />
-
-        <ListEmployee />
+        <Link
+          href={'/dashboard/employee/new'}
+          className={cn(buttonVariants({ variant: 'default' }))}
+        >
+          <Plus className="mr-2 h-4 w-4" /> Tambah Karyawan
+        </Link>
       </div>
-    </PageContainer>
+      <Separator />
+
+      <ListEmployee />
+    </div>
   );
 }

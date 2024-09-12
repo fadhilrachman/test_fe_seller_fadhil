@@ -7,7 +7,6 @@ import { columnsEmployee } from './constants';
 
 const ListEmployee = () => {
   const { data } = useListEmployee({});
-  console.log({ data });
 
   return (
     <div className="space-y-4">
