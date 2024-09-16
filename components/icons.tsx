@@ -30,7 +30,9 @@ import {
   UserX2Icon,
   X,
   Volume2,
-  List
+  List,
+  Database,
+  Clock10
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -39,9 +41,11 @@ export const Icons = {
   dashboard: LayoutDashboardIcon,
   logActivity: List,
   announcement: Volume2,
+  waitingApproval: Clock10,
   logo: Command,
   login: LogIn,
   close: X,
+  database: Database,
   profile: User2Icon,
   spinner: Loader2,
   kanban: CircuitBoardIcon,
