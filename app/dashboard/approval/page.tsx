@@ -8,6 +8,7 @@ import ListApproval from '@/features/dashboard/approval/list-approval';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import TabsApproval from './tabs-approval';
 const breadcrumbItems = [
   { title: 'Dashboard', link: '/dashboard' },
   { title: 'Approval', link: '/dashboard/approval' }
@@ -25,24 +26,24 @@ const page = () => {
         />
       </div>
 
-      <BaseTab
+      <TabsApproval
         data={[
           {
             label: 'Menunggu Persetujuan',
-            name: 'waitingApproval',
+            name: 'waiting_approval',
             icon: 'waitingApproval',
             className: 'text-primary'
           },
           {
             label: 'Disetujui',
             name: 'approved',
-            icon: 'check',
-            className: 'text-green-500'
+            icon: 'check'
+            // className: 'text-green-500'
           },
           {
             label: 'Ditolak',
             name: 'rejected',
-            className: 'text-red-500',
+            // className: 'text-red-500',
             icon: 'close'
           }
         ]}

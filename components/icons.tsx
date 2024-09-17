@@ -32,7 +32,8 @@ import {
   Volume2,
   List,
   Database,
-  Clock10
+  Clock10,
+  Paperclip
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -68,6 +69,7 @@ export const Icons = {
   sun: SunMedium,
   moon: Moon,
   laptop: Laptop,
+  file: Paperclip,
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"
