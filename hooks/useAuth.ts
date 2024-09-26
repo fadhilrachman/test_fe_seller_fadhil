@@ -27,11 +27,12 @@ export const useSignIn = () => {
 
       toast({
         description: 'Success'
+        // variant:''
       });
 
       //   enqueueSnackbar({ message: "Success sign in", variant: "success" });
       Cookie.set(process.env.COOKIE_NAME || '', data.data.access_token);
-      navigate.push('/admin');
+      navigate.push('/dashboard');
     }
 
     if (status == 'error') {

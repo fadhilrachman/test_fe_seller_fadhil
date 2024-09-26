@@ -17,41 +17,109 @@ import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { ApprovalModal } from './approval-modal';
 import { ApprovalType } from '@/types/approval';
+import { Download, Eye, Filter, Plus, X } from 'lucide-react';
+import { FilterApproval } from './filter-approval';
+import BaseInputSearch from '@/components/base-input-search';
+import SkeletonApproval from './skeleton-approval';
 
 const ListApproval = () => {
-  const IconX = Icons['close'];
-  const [dialog, setDialog] = useState({ approval: false });
+  const IconFeedback = Icons['feedback'];
+  const [paginationAndSearch, setPaginationAndSearch] = useState({
+    search: ''
+  });
+  const [filter, setFilter] = useState({
+    approval_type: { id: '', label: '' },
+    division_id: { id: '', label: '' }
+  });
+  const [dialog, setDialog] = useState({ approval: false, filter: false });
   const [selectData, setSelectData] = useState<ApprovalType>();
-  const IconCheckList = Icons['check'];
   const IconFile = Icons['file'];
   const searchParams = useSearchParams();
   const status = searchParams.get('tabs') || 'waiting_approval';
-  const { data, refetch } = useListApproval({ status });
-
+  const { data, refetch, isFetching } = useListApproval({
+    status,
+    ...paginationAndSearch,
+    division_id: filter.division_id.id,
+    approval_type: filter.approval_type.id
+  });
+  const approvalType = {
+    attendance: 'Izin Sakit',
+    shifting: 'Shifting',
+    time_off: 'Cuti'
+  };
   const handleOpenCloseDialog = (params: keyof typeof dialog) => {
     setDialog((p) => ({ ...p, [params]: !p[params] }));
   };
 
+  const handleSearch = (val: string) => {
+    setPaginationAndSearch((p) => ({ ...p, search: val }));
+  };
+
+  console.log({ filter });
+
   useEffect(() => {
     refetch();
-  }, [status]);
+  }, [status, paginationAndSearch, filter]);
 
   return (
     <div className="space-y-4">
-      <div className="w-[180px] border">cuyy</div>
-      <div>
-        <Input
-          placeholder={`Search Employee...`}
-          className="w-full md:max-w-sm"
-        />
+      {/* <div className="w-[100px] border bg-gray-400">cuyy</div> */}
+      <div className="flex justify-between space-x-2">
+        <div className="flex space-x-2">
+          <FilterApproval
+            paramsFilter={filter}
+            dataFormFilter={[
+              {
+                name: 'approval_type',
+                placeholder: 'Tipe Perizinan',
+                label: 'Tipe Perizinan',
+                // helperText: 'this is data bla bla',
+                type: 'select',
+                options: [
+                  { label: 'Cuti', id: 'time_off' },
+                  { label: 'Shifting', id: 'shifting' },
+                  { label: 'Absen', id: 'attendance' }
+                ]
+              },
+              {
+                name: 'division_id',
+                placeholder: 'Divisi',
+                label: 'Divisi',
+                helperText: 'this is data bla bla',
+                type: 'select',
+                options: [
+                  { label: 'The Godfather', id: '1' },
+                  { label: 'Pulp Fiction', id: '2' }
+                ]
+              }
+            ]}
+            setParamsFilter={setFilter}
+          />
+          <BaseInputSearch
+            placeholder="Cari Karyawan"
+            onChange={handleSearch}
+          />
+        </div>
+        {/* <p className="text-sm text-gray-400">Filter By</p> */}
+
+        <div className="flex items-start space-x-2">
+          <Button>
+            <Download className="h-4 w-4" />
+            Download
+          </Button>
+        </div>
       </div>
-      {data?.data.length == 0 ? (
+      {/* <ListFilter /> */}
+
+      {isFetching ? (
+        <SkeletonApproval />
+      ) : data?.data.length == 0 ? (
         <div className="flex h-[200px] items-center justify-center">
           Tidak ada data
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3">
-          {data?.data.map((val: any, index: number) => {
+          {data?.data.map((val: ApprovalType, index: number) => {
             const status = {
               waiting_approval: 'Menunggu',
               approved: 'Disetujui',
@@ -63,12 +131,19 @@ const ListApproval = () => {
               rejected: 'destructive'
             };
             return (
-              <Card key={index}>
+              <Card key={index} className="overflow-hidden">
+                <div className="relative flex-grow">
+                  <div className="absolute left-0 top-0 h-1 w-full bg-gradient-to-r from-blue-500 to-purple-500" />
+                </div>
                 <CardHeader>
                   <CardTitle className="flex justify-between">
-                    #97120398 <Badge>Absen</Badge>
+                    #97120398{' '}
+                    <Badge variant={'secondary'}>
+                      {approvalType[val.approval_type]}
+                    </Badge>
                   </CardTitle>
                 </CardHeader>
+
                 <CardContent>
                   <div className=" grid gap-x-6 text-sm lg:grid-cols-2">
                     <div className="mb-4 flex items-center space-x-1">
@@ -135,29 +210,24 @@ const ListApproval = () => {
                 <CardFooter className="flex w-full gap-x-4">
                   <Button
                     className="w-full"
-                    variant={'destructive'}
-                    size={'sm'}
                     onClick={() => {
                       setSelectData(val);
                       handleOpenCloseDialog('approval');
                     }}
                   >
-                    {/* {Icon}
-                     */}
-                    <IconX className=" mr-[4px] h-5" />
-                    Reject
-                  </Button>
-                  <Button
-                    className="w-full "
-                    onClick={() => {
-                      setSelectData(val);
-                      handleOpenCloseDialog('approval');
-                    }}
-                    variant="approved"
-                    size={'sm'}
-                  >
-                    <IconCheckList className=" mr-[4px] h-5" />
-                    Approve
+                    {val.status == 'waiting_approval' ? (
+                      <>
+                        {' '}
+                        <IconFeedback className=" mr-[4px] h-4" />
+                        Beri Tanggapan
+                      </>
+                    ) : (
+                      <>
+                        {' '}
+                        <Eye className=" mr-[4px] h-4" />
+                        Lihat Detail
+                      </>
+                    )}
                   </Button>
                 </CardFooter>
               </Card>

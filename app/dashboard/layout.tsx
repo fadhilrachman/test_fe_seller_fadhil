@@ -1,23 +1,25 @@
+'use client';
 import Header from '@/components/layout/header';
 import PageContainer from '@/components/layout/page-container';
 import Sidebar from '@/components/layout/sidebar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Next Shadcn Dashboard Starter',
-  description: 'Basic dashboard with Next.js and Shadcn'
-};
+import { useSidebar } from '@/hooks/useSidebar';
 
 export default function DashboardLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
+  const { isMinimized, toggle } = useSidebar();
+
   return (
-    <div className="flex bg-white">
+    <div className="relative flex bg-white">
       <Sidebar />
-      <main className="w-full flex-1 overflow-hidden bg-[#F6F7F9]">
+      <main
+        className={`${
+          !isMinimized ? 'sm:ml-72' : 'sm:ml-[72px]'
+        } min-h-[100vh] w-full   bg-[#F6F7F9] transition-all`}
+      >
         <Header />
         <PageContainer>{children}</PageContainer>
       </main>

@@ -1,50 +1,20 @@
+import { useToast } from '@/components/ui/use-toast';
 import { fetcher } from '@/lib/fetcher';
 import { BaseResponseListDto } from '@/types';
-import { ApprovalType } from '@/types/approval';
+import { ApprovalActionType, ApprovalType } from '@/types/approval';
 import { CreateEmployeSchema, EmployeDtoType } from '@/types/employe';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import * as z from 'zod';
 
-type formData = z.infer<typeof CreateEmployeSchema>;
-type formDataUpdateEmployee = z.infer<typeof CreateEmployeSchema>;
-
-export const useCreateEmployee = () => {
-  const navigate = useRouter();
-  const mutation = useMutation<any, Error, formData>({
-    mutationFn: async (body: formData) => {
-      const result = await fetcher.post('/operator/employee', body);
-      return result.data;
-    }
-  });
-
-  useEffect(() => {
-    const status = mutation.status;
-    if (status == 'success') {
-      //   enqueueSnackbar({ message: "Success Create Employee", variant: "success" });
-      navigate.push('/master-data/employee');
-    }
-
-    if (status == 'error') {
-      const error = mutation.error as AxiosError<any>;
-
-      const messageError = Object.values(
-        error.response?.data.errors?.[0] || {}
-      ) as any;
-
-      //   enqueueSnackbar({
-      //     message: messageError?.[0]?.[0] || "Internal Server Error",
-      //     variant: "error",
-      //   });
-    }
-  }, [mutation.status]);
-
-  return mutation;
-};
-
-export const useListApproval = (params: any) => {
+export const useListApproval = (params: {
+  status?: string;
+  search?: string;
+  approval_type?: string;
+  division_id?: string;
+}) => {
   const query = useQuery<BaseResponseListDto<ApprovalType>>({
     queryKey: ['LIST_APPROVAL'],
     queryFn: async () => {
@@ -57,32 +27,45 @@ export const useListApproval = (params: any) => {
   return query;
 };
 
-export const useUpdateEmployee = () => {
+export const useApproval = (id: string) => {
   //   const { enqueueSnackbar } = useSnackbar();
-  const navigate = useRouter();
-  const mutation = useMutation<any, Error, formDataUpdateEmployee>({
-    mutationFn: async (body: formDataUpdateEmployee) => {
-      const result = await fetcher.put('/operator/employee', body);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<any, Error, ApprovalActionType>({
+    mutationFn: async (body: ApprovalActionType) => {
+      const result = await fetcher.patch(`/operator/approval/${id}`, body);
       return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['LIST_APPROVAL'] }); // Menggunakan invalidateQueries untuk memicu ulang query
     }
   });
 
   useEffect(() => {
     const status = mutation.status;
     if (status == 'success') {
-      //   enqueueSnackbar({ message: "Success Update Employee", variant: "success" });
-      navigate.push('/master-data/employee');
+      const { data } = mutation;
+
+      toast({
+        description: 'Success'
+        // variant:''
+      });
     }
 
     if (status == 'error') {
       const error = mutation.error as AxiosError<any>;
-
-      const messageError = Object.values(
-        error.response?.data.errors?.[0] || {}
-      ) as any;
+      const messageError =
+        (Object.values(error?.response?.data?.errors[0]) as any) ||
+        'Internal Server Error';
+      toast({
+        title: 'Approval Error',
+        variant: 'destructive',
+        description: messageError
+      });
 
       //   enqueueSnackbar({
-      //     message: messageError?.[0]?.[0] || "Internal Server Error",
+      //     message: messageError[0][0] || "Internal Server Error",
       //     variant: "error",
       //   });
     }
