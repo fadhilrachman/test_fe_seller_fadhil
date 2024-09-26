@@ -40,17 +40,11 @@ export function DashboardNav({
     return null;
   }
 
-  console.log('isActive', isMobileNav, isMinimized);
-
   return (
     <nav className="grid items-start gap-2">
       <TooltipProvider>
         {items.map((item, index) => {
           const listHrefSubMenu = item.subMenu?.map((val) => val.href);
-          console.log({
-            path,
-            href: listHrefSubMenu?.includes(path)
-          });
 
           const Icon = Icons[item.icon || 'arrowRight'];
           return (
@@ -60,21 +54,28 @@ export function DashboardNav({
                   <Link
                     href={item.disabled ? '/' : item.href}
                     className={cn(
-                      'flex h-[38px]  items-center gap-2 overflow-hidden rounded-md py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
+                      'relative flex h-[38px] items-center gap-2 overflow-hidden rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
                       path === item.href ? 'bg-accent' : 'transparent'
-
-                      // item.disabled && 'cursor-not-allowed opacity-80'
                     )}
                     onClick={() => {
                       if (setOpen) setOpen(false);
                     }}
                   >
-                    <Icon className={`ml-3 size-5 flex-none`} />
+                    <Icon className={` size-5 flex-none`} />
 
                     {isMobileNav || (!isMinimized && !isMobileNav) ? (
                       <span className="mr-2 truncate">{item.title}</span>
                     ) : (
                       ''
+                    )}
+                    {item.title == 'Approval' && (
+                      <div
+                        className={`absolute ${
+                          isMinimized ? 'right-1 top-1' : 'right-3'
+                        }  flex h-4 w-4 items-center justify-center rounded-md bg-red-500 text-xs text-white`}
+                      >
+                        1
+                      </div>
                     )}
                   </Link>
                 ) : (

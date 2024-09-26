@@ -15,13 +15,16 @@ import {
   getFilteredRowModel,
   useReactTable
 } from '@tanstack/react-table';
+import { Spinner } from './ui/spinner';
 
 const BaseTable = ({
   data,
-  columns
+  columns,
+  loading = false
 }: {
   data: any[];
   columns: ColumnDef<any>[];
+  loading?: boolean;
 }) => {
   const table = useReactTable({
     data,
@@ -31,8 +34,8 @@ const BaseTable = ({
     getFilteredRowModel: getFilteredRowModel()
   });
   return (
-    <ScrollArea className="h-[calc(80vh-220px)] rounded-md border">
-      <Table className="relative">
+    <div className="rounded-md border">
+      <Table className="relative ">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -52,7 +55,13 @@ const BaseTable = ({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {loading ? (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                <Spinner />
+              </TableCell>
+            </TableRow>
+          ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
@@ -68,15 +77,19 @@ const BaseTable = ({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                Tidak ada data.
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
-      <ScrollBar orientation="horizontal" />
-    </ScrollArea>
+    </div>
   );
 };
 
 export default BaseTable;
+// <ScrollArea className="h-[calc(80vh-220px)] rounded-md border">
+{
+  /* <ScrollBar orientation="horizontal" />
+    </ScrollArea> */
+}

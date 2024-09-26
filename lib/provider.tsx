@@ -12,6 +12,7 @@ function Provider({ children }: React.PropsWithChildren) {
           refetchOnWindowFocus: false,
           retry(failureCount, error: any) {
             if (error.status === 404) return false;
+            if (error.status === 403) return false;
             if (failureCount < 2) return true;
             return false;
           }
