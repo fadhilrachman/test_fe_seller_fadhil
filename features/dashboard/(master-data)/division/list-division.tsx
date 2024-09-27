@@ -1,37 +1,42 @@
 'use client';
 import BaseTable from '@/components/base-table';
 import { Input } from '@/components/ui/input';
+import { useListEmployee } from '@/hooks/useEmployee';
 import React, { useEffect, useState } from 'react';
 import { columnsDivision } from './contants-division';
 import { useListDivision } from '@/hooks/useDivision';
-import BasePagination from '@/components/base-pagination';
+import BaseInputSearch from '@/components/base-input-search';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 
 const ListDivision = () => {
-  const [currentPage, setCurrentPage] = useState(1); // Menambahkan state untuk halaman
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const { data, refetch } = useListDivision({
-    page: currentPage // Menambahkan parameter halaman ke API
+  const [paginationAndSearch, setPaginationAndSearch] = useState({
+    page: 1,
+    per_page: 10,
+    search: ''
   });
+  const { data, refetch, isFetching } = useListDivision(paginationAndSearch);
+
+  const handleSearch = (val: string) => {
+    setPaginationAndSearch((p) => ({ ...p, search: val }));
+  };
 
   useEffect(() => {
-    refetch(); // Memanggil ulang data saat currentPage berubah
-  }, [currentPage, refetch]);
-
+    refetch();
+  }, [paginationAndSearch]);
   return (
     <div className="space-y-4">
-      <div>
-        <Input placeholder={`Cari Divisi`} className="w-full md:max-w-sm" />
+      <div className="flex items-center justify-between">
+        <BaseInputSearch placeholder="Cari Divisi" onChange={handleSearch} />
+        <Button>
+          <Download className="mr-2 h-4 w-4" />
+          Download
+        </Button>
       </div>
-      <BaseTable columns={columnsDivision} data={data?.data || []} />
-      <BasePagination
-        currentPage={currentPage}
-        totalPages={10}
-        totalItems={data?.pagination.total_data || 0}
-        itemsPerPage={itemsPerPage}
-        onPageChange={(page: number) => setCurrentPage(page)}
-        onItemsPerPageChange={(itemsPerPage: number) =>
-          setItemsPerPage(itemsPerPage)
-        }
+      <BaseTable
+        columns={columnsDivision}
+        data={data?.data || []}
+        loading={isFetching}
       />
     </div>
   );

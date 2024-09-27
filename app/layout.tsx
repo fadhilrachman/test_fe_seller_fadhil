@@ -23,11 +23,11 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${GeistSans.className} overflow-hidden `}
+        className={`${GeistSans.className}  `}
         suppressHydrationWarning={true}
       >
         <NextTopLoader showSpinner={false} />
-        <Providers session={session}>
+        <Providers>
           <Toaster />
           {children}
         </Providers>

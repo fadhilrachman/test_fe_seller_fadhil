@@ -1,7 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['utfs.io']
+    domains: ['utfs.io', 'mycbuckethris.s3.ap-southeast-2.amazonaws.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'mycbuckethris.s3.amazonaws.com',
+        port: '',
+        pathname: '/*'
+      }
+    ]
   },
   env: {
     API_URL: process.env.API_URL,

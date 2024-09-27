@@ -124,9 +124,15 @@ export const navItems: NavItem[] = [
     label: 'Dashboard'
   },
   {
+    title: 'Approval',
+    href: '/dashboard/approval',
+    icon: 'post',
+    label: 'approval'
+  },
+  {
     title: 'Master Data',
     href: '/dashboard/user',
-    icon: 'user',
+    icon: 'database',
     label: 'user',
     subMenu: [
       {
@@ -170,13 +176,8 @@ export const navItems: NavItem[] = [
         href: '/dashboard/time-off'
       }
     ]
-  },
-  {
-    title: 'Log Aktifitas',
-    href: '/dashboard/log-activity',
-    icon: 'logActivity',
-    label: 'employee'
   }
+
   // {
   //   title: 'Employee',
   //   href: '/dashboard/employee',
