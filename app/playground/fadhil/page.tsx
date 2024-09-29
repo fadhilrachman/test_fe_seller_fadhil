@@ -27,6 +27,108 @@ const frameworksList = [
   { value: 'ember', label: 'Ember' },
   { value: 'ember', label: 'Ember' }
 ];
+const frameworks = [
+  {
+    id: 'next.js',
+    label: 'Next.js'
+  },
+  {
+    id: 'sveltekit',
+    label: 'SvelteKit'
+  },
+  {
+    id: 'nuxt.js',
+    label: 'Nuxt.js'
+  },
+  {
+    id: 'remix',
+    label: 'Remix'
+  },
+  {
+    id: 'astro',
+    label: 'Astro'
+  },
+  {
+    id: 'next.js',
+    label: 'Next.js'
+  },
+  {
+    id: 'sveltekit',
+    label: 'SvelteKit'
+  },
+  {
+    id: 'nuxt.js',
+    label: 'Nuxt.js'
+  },
+  {
+    id: 'remix',
+    label: 'Remix'
+  },
+  {
+    id: 'astro',
+    label: 'Astro'
+  },
+  {
+    id: 'next.js',
+    label: 'Next.js'
+  },
+  {
+    id: 'sveltekit',
+    label: 'SvelteKit'
+  },
+  {
+    id: 'nuxt.js',
+    label: 'Nuxt.js'
+  },
+  {
+    id: 'remix',
+    label: 'Remix'
+  },
+  {
+    id: 'astro',
+    label: 'Astro'
+  },
+  {
+    id: 'next.js',
+    label: 'Next.js'
+  },
+  {
+    id: 'sveltekit',
+    label: 'SvelteKit'
+  },
+  {
+    id: 'nuxt.js',
+    label: 'Nuxt.js'
+  },
+  {
+    id: 'remix',
+    label: 'Remix'
+  },
+  {
+    id: 'astro',
+    label: 'Astro'
+  },
+  {
+    id: 'next.js',
+    label: 'Next.js'
+  },
+  {
+    id: 'sveltekit',
+    label: 'SvelteKit'
+  },
+  {
+    id: 'nuxt.js',
+    label: 'Nuxt.js'
+  },
+  {
+    id: 'remix',
+    label: 'Remix'
+  },
+  {
+    id: 'astro',
+    label: 'Astro'
+  }
+];
 
 function Home() {
   const form = useForm();
@@ -42,6 +144,12 @@ function Home() {
       <FormGenerator
         form={form}
         data={[
+          {
+            name: 'cuy',
+            type: 'comobox',
+            label: 'Comobox',
+            options: frameworks
+          },
           {
             name: 'examplefile',
             type: 'upload',
