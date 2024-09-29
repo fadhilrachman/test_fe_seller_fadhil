@@ -84,7 +84,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         id={id}
-        className={` grid  grid-cols-4 gap-4`}
+        className={` grid  grid-cols-${grid} gap-4`}
       >
         {data.map((val) => {
           if (val.type == 'title') {
