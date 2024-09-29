@@ -23,9 +23,25 @@ import { TimePickerInput } from './ui/time-picker';
 import moment from 'moment';
 
 import { useDropzone } from 'react-dropzone';
-import { FileIcon, Paperclip, X } from 'lucide-react';
+import { Check, ChevronsUpDown, FileIcon, Paperclip, X } from 'lucide-react';
 import { useUploadFile } from '@/hooks/common.hook';
 import { Spinner } from './ui/spinner';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
+import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
+
 export interface DataFormType {
   // name:''
   label: string | ReactNode;
@@ -37,6 +53,7 @@ export interface DataFormType {
     | 'password'
     | 'textarea'
     | 'email'
+    | 'comobox'
     | 'subtitle'
     | 'title'
     | 'timepicker'
@@ -59,15 +76,15 @@ interface Props {
   data: DataFormType[];
   onSubmit: (params: any) => void;
   id: string;
-  grid?: string;
+  grid?: number;
 }
-const FormGenerator = ({ form, data, onSubmit, id, grid = '3' }: Props) => {
+const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         id={id}
-        className={` grid  grid-cols-${grid} gap-4`}
+        className={` grid  grid-cols-4 gap-4`}
       >
         {data.map((val) => {
           if (val.type == 'title') {
@@ -80,7 +97,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = '3' }: Props) => {
           }
           if (val.type == 'text') {
             return (
-              <div className={`col-span-${val.grid}`}>
+              <div className={`col-span-${val.grid || grid}`}>
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -102,9 +119,75 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = '3' }: Props) => {
             );
           }
 
+          if (val.type == 'comobox') {
+            const [open, setOpen] = React.useState(false);
+
+            return (
+              <div
+                className={`col-span-${val.grid || grid}  space-y-2`}
+                key={val.name}
+              >
+                <p className="text-[14px]">{val.label}</p>
+
+                <Popover open={open} onOpenChange={setOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={open}
+                      className="w-full justify-between"
+                    >
+                      {form.watch(val.name)
+                        ? val?.options?.find(
+                            (framework) => framework.id === form.watch(val.name)
+                          )?.label
+                        : val.placeholder || 'Pilih'}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className=" w-[300px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Search framework..." />
+                      <CommandList>
+                        <CommandEmpty>No framework found.</CommandEmpty>
+                        <CommandGroup>
+                          {val?.options?.map((framework) => (
+                            <CommandItem
+                              key={framework.id}
+                              value={framework.id}
+                              onSelect={(currentValue) => {
+                                form.setValue(
+                                  val.name,
+                                  currentValue === form.watch(val.name)
+                                    ? ''
+                                    : currentValue
+                                );
+                                setOpen(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  'mr-2 h-4 w-4',
+                                  form.watch(val.name) === framework.id
+                                    ? 'opacity-100'
+                                    : 'opacity-0'
+                                )}
+                              />
+                              {framework.label}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            );
+          }
+
           if (val.type == 'date') {
             return (
-              <div className={`col-span-${val.grid}`}>
+              <div className={`col-span-${val.grid || grid}`}>
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -142,7 +225,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = '3' }: Props) => {
               onDrop
             });
             return (
-              <div className={`col-span-${val.grid} space-y-2`}>
+              <div className={`col-span-${val.grid || grid} space-y-2`}>
                 <p className="text-[14px]">{val.label}</p>
                 {!form.watch(val.name) ? (
                   <div
@@ -222,7 +305,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = '3' }: Props) => {
             }, [date]);
 
             return (
-              <div className={`col-span-${val.grid}`}>
+              <div className={`col-span-${val.grid || grid}`}>
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -258,7 +341,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = '3' }: Props) => {
 
           if (val.type == 'textarea') {
             return (
-              <div className={`col-span-${val.grid}`}>
+              <div className={`col-span-${val.grid || grid}`}>
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -281,7 +364,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = '3' }: Props) => {
           }
           if (val.type == 'select') {
             return (
-              <div className={`col-span-${val.grid}`}>
+              <div className={`col-span-${val.grid || grid}`}>
                 <FormField
                   control={form.control}
                   name={val.name}
