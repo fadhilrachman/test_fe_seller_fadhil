@@ -3,15 +3,17 @@ import { Breadcrumbs } from '@/components/breadcrumbs';
 import { Button } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Separator } from '@/components/ui/separator';
+import { FormShifting } from '@/features/dashboard/(attendance-management)/shifting/form-shifting';
 import ListShifting from '@/features/dashboard/(attendance-management)/shifting/list-shifting';
 import { Plus } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 
 const breadcrumbItems = [
   { title: 'Dashboard', link: '/dashboard' },
   { title: 'Shifting', link: '/dashboard/shifting' }
 ];
 const page = () => {
+  const [dialog, setDialog] = useState({ create: false });
   return (
     <div className="space-y-4">
       <Breadcrumbs items={breadcrumbItems} />
@@ -20,7 +22,7 @@ const page = () => {
 
         <Button
           onClick={() => {
-            // setDialog((p) => ({ ...p, create: true }));
+            setDialog((p) => ({ ...p, create: true }));
           }}
           variant={'default'}
         >
@@ -28,6 +30,15 @@ const page = () => {
         </Button>
       </div>
       <Separator />
+      <ListShifting />
+      {dialog.create && (
+        <FormShifting
+          isOpen={dialog.create}
+          onClose={() => {
+            setDialog((p) => ({ ...p, create: false }));
+          }}
+        />
+      )}
     </div>
   );
 };
