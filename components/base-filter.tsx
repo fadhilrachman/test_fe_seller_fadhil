@@ -1,4 +1,5 @@
 import {
+  CalendarIcon,
   Cloud,
   CreditCard,
   Filter,
@@ -37,6 +38,15 @@ import {
 } from '@/components/ui/select';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Input } from './ui/input';
+import moment from 'moment';
+import { Calendar } from './ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 
 interface Obj {
   id: string;
@@ -47,8 +57,8 @@ export interface DataFormTypeFilter {
   placeholder?: string;
   label: string;
   helperText?: string;
-  type: 'select' | 'autcomplete';
-  options: {
+  type: 'select' | 'autcomplete' | 'date' | 'rangedate';
+  options?: {
     id: string;
     label: string;
   }[];
@@ -74,6 +84,7 @@ export function BaseFilter({
   const isFilter = Object.keys(paramsFilter)
     .map((val) => paramsFilter[val].id)
     .filter((res) => res != '');
+  const [date, setDate] = useState<Date>();
   const handleResetOneFilter = (paramsName: string) => {
     setLocalParams((item: any) => ({
       ...item,
@@ -123,61 +134,147 @@ export function BaseFilter({
           <DropdownMenuLabel>Filter </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          <div className="mb-2 space-y-4">
+          <div className="mb-2 ">
             {dataFormFilter.map((val, i) => {
-              return (
-                <>
-                  <div className="px-2">
-                    <div className="flex items-center justify-between">
-                      <p className="mb-2 items-center text-sm">{val.label}</p>{' '}
-                      <Button
-                        variant={'link'}
-                        size={'sm'}
-                        onClick={() => {
-                          handleResetOneFilter(val.name);
-                        }}
-                        className="mb-2 text-xs text-primary "
-                      >
-                        Hapus
-                      </Button>
+              if (val.type == 'rangedate') {
+                return (
+                  <>
+                    <div className="px-2" key={val.name}>
+                      <div className="flex items-center justify-between">
+                        <p className="mb-1 items-center text-sm">{val.label}</p>{' '}
+                        <Button
+                          variant={'link'}
+                          size={'sm'}
+                          onClick={() => {
+                            handleResetOneFilter(val.name);
+                          }}
+                          className="mb-1 text-xs text-primary "
+                        >
+                          Hapus
+                        </Button>
+                      </div>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={'outline'}
+                            className={cn(
+                              ' w-full justify-start text-left font-normal',
+                              !date && 'text-muted-foreground'
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date ? (
+                              moment(date).format('PPP')
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className=" w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
-                    <Select
-                      value={localParams[val.name].id}
-                      //   onOpenChange={()}
-                      onValueChange={(value) => {
-                        setLocalParams((item: any) => ({
-                          ...item,
-                          [val.name]: {
-                            id: value,
-                            label: val.options.find((res) => res.id == value)
-                              ?.label
-                          }
-                        }));
-                      }}
-                    >
-                      <SelectTrigger>
-                        {localParams[val.name].label == '' ? (
-                          val.placeholder
-                        ) : (
-                          <SelectValue />
-                        )}
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {val.options.map((valOpt, keyOpt) => {
-                            return (
-                              <SelectItem value={valOpt.id} key={keyOpt}>
-                                {valOpt.label}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <DropdownMenuSeparator />
-                </>
-              );
+                    <DropdownMenuSeparator className="my-2" />
+                  </>
+                );
+              }
+              if (val.type == 'date') {
+                return (
+                  <>
+                    <div className="px-2" key={val.name}>
+                      <div className="flex items-center justify-between">
+                        <p className="mb-1 items-center text-sm">{val.label}</p>{' '}
+                        <Button
+                          variant={'link'}
+                          size={'sm'}
+                          onClick={() => {
+                            handleResetOneFilter(val.name);
+                          }}
+                          className="mb-1 text-xs text-primary "
+                        >
+                          Hapus
+                        </Button>
+                      </div>
+                      <Input
+                        type="date"
+                        value={localParams[val.name].id}
+                        onChange={(e) => {
+                          setLocalParams((item: any) => ({
+                            ...item,
+                            [val.name]: {
+                              id: e.target.value,
+                              label: moment(e.target.value).format(
+                                'DD MMMM YYYY'
+                              )
+                            }
+                          }));
+                        }}
+                      />
+                    </div>
+                    <DropdownMenuSeparator className="my-2" />
+                  </>
+                );
+              }
+              if (val.type == 'select') {
+                return (
+                  <>
+                    <div className="px-2" key={val.name}>
+                      <div className="flex items-center justify-between">
+                        <p className="mb-1 items-center text-sm">{val.label}</p>{' '}
+                        <Button
+                          variant={'link'}
+                          size={'sm'}
+                          onClick={() => {
+                            handleResetOneFilter(val.name);
+                          }}
+                          className="mb-1 text-xs text-primary "
+                        >
+                          Hapus
+                        </Button>
+                      </div>
+                      <Select
+                        value={localParams[val.name].id}
+                        //   onOpenChange={()}
+                        onValueChange={(value) => {
+                          setLocalParams((item: any) => ({
+                            ...item,
+                            [val.name]: {
+                              id: value,
+                              label: val.options?.find((res) => res.id == value)
+                                ?.label
+                            }
+                          }));
+                        }}
+                      >
+                        <SelectTrigger>
+                          {localParams[val.name].label == '' ? (
+                            val.placeholder
+                          ) : (
+                            <SelectValue />
+                          )}
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {val.options?.map((valOpt, keyOpt) => {
+                              return (
+                                <SelectItem value={valOpt.id} key={keyOpt}>
+                                  {valOpt.label}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <DropdownMenuSeparator className="my-2" />
+                  </>
+                );
+              }
             })}
           </div>
 
@@ -208,6 +305,8 @@ export function BaseFilter({
               <button
                 className="ml-2 flex h-3 w-3 items-center justify-center rounded-full bg-blue-100 "
                 onClick={() => {
+                  console.log('cuyyyy');
+
                   handleResetOneFilter(val);
                 }}
               >
