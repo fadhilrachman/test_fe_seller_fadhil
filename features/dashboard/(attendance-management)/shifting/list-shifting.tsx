@@ -30,13 +30,13 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
 const columns: ColumnDef<ShiftingType>[] = [
-  {
-    accessorKey: 'code',
-    header: 'Kode',
-    cell: ({ row, column, getValue }) => (
-      <p className="!text-blue-500">{row.original.code}</p>
-    )
-  },
+  // {
+  //   accessorKey: 'code',
+  //   header: 'Kode',
+  //   cell: ({ row, column, getValue }) => (
+  //     <p className="!text-blue-500">{row.original.code}</p>
+  //   )
+  // },
   {
     accessorKey: 'name',
     header: 'NAME',
@@ -46,7 +46,10 @@ const columns: ColumnDef<ShiftingType>[] = [
           <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
-        <span>{row.original.user.name}</span>
+        <div className="flex flex-col">
+          <span>{row.original.user.name}</span>
+          <small className="text-gray-500">{row.original.user.email}</small>
+        </div>
       </div>
     )
   },
