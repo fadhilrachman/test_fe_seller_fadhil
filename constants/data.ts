@@ -156,12 +156,8 @@ export const navItems: NavItem[] = [
     label: 'employee',
     subMenu: [
       {
-        title: 'Absen',
-        href: '/dashboard/absent'
-      },
-      {
-        title: 'History Absent',
-        href: '/dashboard/absent'
+        title: 'History Presensi',
+        href: '/dashboard/history-attendance'
       },
       {
         title: 'Master Shifting',
