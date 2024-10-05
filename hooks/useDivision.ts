@@ -1,14 +1,9 @@
 import { useToast } from '@/components/ui/use-toast';
 import { fetcher } from '@/lib/fetcher';
-import { BaseResponseListDto } from '@/types';
+import { BaseResponseListDto, BaseResponseShowDto } from '@/types';
 import { CreateDivisionSchema } from '@/types/division';
 import { CreateEmployeSchema, EmployeDtoType } from '@/types/employe';
-import {
-  QueryClient,
-  useMutation,
-  useQuery,
-  useQueryClient
-} from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -83,6 +78,18 @@ export const useListDivision = (params: any) => {
   return query;
 };
 
+export const useDivisionById = (id: string) => {
+  const query = useQuery<BaseResponseShowDto<EmployeDtoType>>({
+    queryKey: ['DIVISION_BY_ID'],
+    queryFn: async () => {
+      const result = await fetcher.get(`/operator/division/${id}`);
+      return result.data;
+    }
+  });
+
+  return query;
+};
+
 export const useUpdateDivision = () => {
   //   const { enqueueSnackbar } = useSnackbar();
   const navigate = useRouter();
@@ -125,19 +132,27 @@ export const useUpdateDivision = () => {
 };
 
 export const useDeleteDivision = () => {
-  //   const { enqueueSnackbar } = useSnackbar();
-  const mutation = useMutation<any, Error, number>({
-    mutationFn: async (id: number) => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<any, Error, string>({
+    mutationFn: async (id: string) => {
       const result = await fetcher.delete(`/operator/division/${id}`);
       return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['LIST_DIVISION'] }); // Menggunakan invalidateQueries untuk memicu ulang query
     }
   });
 
   useEffect(() => {
     const status = mutation.status;
     if (status == 'success') {
-      const { data } = mutation;
-      console.log({ data });
+      toast({
+        description: `berhasil menghapus divisi`,
+        title: 'Sukses',
+        variant: 'success'
+      });
     }
 
     if (status == 'error') {
@@ -147,10 +162,11 @@ export const useDeleteDivision = () => {
         error.response?.data.errors?.[0] || {}
       ) as any;
 
-      //   enqueueSnackbar({
-      //     message: messageError?.[0]?.[0] || "Internal Server Error",
-      //     variant: "error",
-      //   });
+      toast({
+        description: messageError?.[0]?.[0] || 'Internal Server Error',
+        title: 'Gagal',
+        variant: 'destructive'
+      });
     }
   }, [mutation.status]);
 

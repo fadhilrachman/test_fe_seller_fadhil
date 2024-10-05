@@ -9,23 +9,33 @@ import {
   DialogTitle
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useCreateDivision } from '@/hooks/useDivision';
+import {
+  useCreateDivision,
+  useListDivision,
+  useUpdateDivision
+} from '@/hooks/useDivision';
 import { CreateDivisionSchema } from '@/types/division';
+import { EmployeDtoType } from '@/types/employe';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  employee: EmployeDtoType | null;
 }
 
 // type FormData = z.infer<typeof CreateDivisionSchema>;
 
-export function CreateDivision(props: Props) {
-  const { mutate, status } = useCreateDivision();
+export function UpdateEmployee(props: Props) {
+  const { mutate, status } = useUpdateDivision();
   const form = useForm({
     resolver: zodResolver(CreateDivisionSchema)
   });
+
+  const [latitude, longitude] = props.division?.location
+    ? props.division.location.split(',')
+    : ['', ''];
 
   useEffect(() => {
     if (status == 'success') {
@@ -55,30 +65,34 @@ export function CreateDivision(props: Props) {
               name: 'name',
               type: 'text',
               placeholder: 'IT Operation',
-              label: 'Nama Divisi'
+              label: 'Nama Divisi',
+              defaultValue: props.division?.name
             },
-
             {
               name: 'latitude',
               type: 'text',
-              label: 'Latitude'
+              label: 'Latitude',
+              defaultValue: latitude
             },
             {
               name: 'longitude',
               type: 'text',
-              label: 'Longitude'
+              label: 'Longitude',
+              defaultValue: longitude
             },
             {
               name: 'entry_time',
               type: 'timepicker',
               placeholder: '17:00',
-              label: 'Jam Masuk'
+              label: 'Jam Masuk',
+              defaultValue: props.division?.entry_time
             },
             {
               name: 'leave_time',
               placeholder: '17:00',
               type: 'timepicker',
-              label: 'Jam Pulang'
+              label: 'Jam Pulang',
+              defaultValue: props.division?.leave_time
             }
           ]}
         />

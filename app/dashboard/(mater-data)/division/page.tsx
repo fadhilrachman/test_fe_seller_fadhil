@@ -14,7 +14,7 @@ const breadcrumbItems = [
   { title: 'Divisi', link: '/dashboard/division' }
 ];
 
-const page = () => {
+const Page = () => {
   const [dialog, setDialog] = useState({
     create: false
   });
@@ -49,4 +49,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
