@@ -37,17 +37,15 @@ export const useSignIn = () => {
 
     if (status == 'error') {
       const error = mutation.error as AxiosError<any>;
-      const messageError = Object.values(error.response?.data.errors[0]) as any;
-      toast({
-        title: 'Login Error',
-        variant: 'destructive',
-        description: messageError || 'Internal Server Error'
-      });
 
-      //   enqueueSnackbar({
-      //     message: messageError[0][0] || "Internal Server Error",
-      //     variant: "error",
-      //   });
+      const messageError =
+        (Object.values(error.response?.data.errors?.[0] || {}) as any) ||
+        'Gagal membuat pengumuman';
+      toast({
+        title: 'Gagal',
+        variant: 'destructive',
+        description: messageError || 'Gagal masuk'
+      });
     }
   }, [mutation.status]);
 

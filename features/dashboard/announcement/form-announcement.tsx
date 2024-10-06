@@ -99,7 +99,6 @@ export function FormAnnouncement(props: Props) {
           form={form}
           id="form"
           onSubmit={listConditionForm.mutate[typeForm]}
-          grid="1"
           data={[
             {
               name: 'description',

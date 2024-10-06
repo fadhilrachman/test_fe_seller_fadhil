@@ -292,10 +292,18 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
           }
 
           if (val.type == 'timepicker') {
-            const [date, setDate] = useState<any>();
+            const [date, setDate] = useState<any>(
+              moment()
+                .set({
+                  hours: Number(form.getValues(val.name)?.split(':')[0] | 0),
+                  minutes: Number(form.getValues(val.name)?.split(':')[1] | 0)
+                })
+                .toDate()
+            );
 
             const minuteRef = React.useRef<HTMLInputElement>(null);
             const hourRef = React.useRef<HTMLInputElement>(null);
+            console.log({ value: form.getValues(val.name) });
 
             useEffect(() => {
               form.setValue(

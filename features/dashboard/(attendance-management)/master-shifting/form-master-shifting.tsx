@@ -9,37 +9,75 @@ import {
   DialogTitle
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { useCreateMasterShifting } from '@/hooks/master-shifting.hooks';
+import {
+  useCreateMasterShifting,
+  useUpdateMasterShifting
+} from '@/hooks/master-shifting.hooks';
 import { useCreateDivision } from '@/hooks/useDivision';
-import { CreateMasterShiftingType } from '@/types/master-shifting.type';
+import {
+  CreateMasterShiftingType,
+  MasterShiftingType
+} from '@/types/master-shifting.type';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  data?: MasterShiftingType;
+  typeForm: 'create' | 'update';
 }
 
-// type FormData = z.infer<typeof CreateDivisionSchema>;
+type FormData = z.infer<typeof CreateMasterShiftingType>;
 
 export function FormMasterShifting(props: Props) {
-  const { mutate, status } = useCreateMasterShifting();
-  const form = useForm({
+  const { mutate: mutateCreate, status: statusCreate } =
+    useCreateMasterShifting();
+  const { mutate: mutateUpdate, status: statusUpdate } =
+    useUpdateMasterShifting(props?.data?.id || '');
+  console.log({ id: props.data?.id });
+
+  const form = useForm<FormData>({
     resolver: zodResolver(CreateMasterShiftingType)
   });
 
-  useEffect(() => {
-    if (status == 'success') {
-      props.onClose();
-      form.reset();
+  const listConditionForm = {
+    title: {
+      create: 'Buat',
+      update: 'Edit'
+    },
+    status: {
+      create: statusCreate,
+      update: statusUpdate
+    },
+    mutate: {
+      create: mutateCreate,
+      update: mutateUpdate
     }
-  }, [status]);
+  };
+  useEffect(() => {
+    if (listConditionForm.status[props.typeForm] == 'success') {
+      form.reset();
+      props.onClose();
+    }
+  }, [listConditionForm.status[props.typeForm]]);
 
+  useEffect(() => {
+    if (props.typeForm == 'update') {
+      form.setValue('name', props.data?.name || '');
+      form.setValue('entry_hours', props.data?.entry_hours || '');
+      form.setValue('leave_hours', props.data?.leave_hours || '');
+      form.setValue('description', props.data?.description || '');
+    }
+  }, [props.data]);
   return (
     <Dialog open={props.isOpen} onOpenChange={props.onClose}>
       <DialogContent className="">
         <DialogHeader>
-          <DialogTitle>Tambah Master Shifting</DialogTitle>
+          <DialogTitle>
+            {listConditionForm.title[props.typeForm]} Master Shifting
+          </DialogTitle>
           <DialogDescription>
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
@@ -48,10 +86,7 @@ export function FormMasterShifting(props: Props) {
         <FormGenerator
           form={form}
           id="form"
-          onSubmit={async (val: any) => {
-            await mutate(val);
-          }}
-          grid="1"
+          onSubmit={listConditionForm.mutate[props.typeForm]}
           data={[
             {
               name: 'name',
@@ -83,7 +118,11 @@ export function FormMasterShifting(props: Props) {
           <Button type="button" onClick={props.onClose} variant={'ghost'}>
             Kembali
           </Button>
-          <Button type="submit" form="form" loading={status == 'pending'}>
+          <Button
+            type="submit"
+            form="form"
+            loading={listConditionForm.status[props.typeForm] == 'pending'}
+          >
             Simpan
           </Button>
         </DialogFooter>

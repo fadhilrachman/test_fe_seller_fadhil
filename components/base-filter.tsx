@@ -1,22 +1,4 @@
-import {
-  CalendarIcon,
-  Cloud,
-  CreditCard,
-  Filter,
-  Github,
-  Keyboard,
-  LifeBuoy,
-  LogOut,
-  Mail,
-  MessageSquare,
-  Plus,
-  PlusCircle,
-  Settings,
-  User,
-  UserPlus,
-  Users,
-  X
-} from 'lucide-react';
+import { CalendarIcon, Cloud, CreditCard, Filter, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
