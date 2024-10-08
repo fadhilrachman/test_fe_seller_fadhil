@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,24 +17,59 @@ import { useDeleteDivision, useListDivision } from '@/hooks/useDivision';
 import { DivisionType } from '@/types/division';
 import { UpdateDivision } from './update-division';
 import { useRouter } from 'next/navigation';
+import BasePagination from '@/components/base-pagination';
+import * as XLSX from 'xlsx';
 
 const ListDivision = () => {
   const [selectedDivision, setSelectedDivision] = useState<DivisionType | null>(
     null
   );
-  const router = useRouter();
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false); // Tambahkan state untuk kontrol dialog konfirmasi
   const [modalUpdate, setModalUpdate] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isDownload, setIsDownload] = useState(false);
   const [paginationAndSearch, setPaginationAndSearch] = useState({
     page: 1,
     per_page: 10,
     search: ''
   });
+
+  const { data, isFetching, refetch } = useListDivision({
+    ...paginationAndSearch,
+    per_page: isDownload ? 10000 : paginationAndSearch.per_page,
+    search: isDownload ? '' : paginationAndSearch.search
+  });
+
+  const router = useRouter();
   const { mutate, status } = useDeleteDivision();
-  const { data, isFetching } = useListDivision(paginationAndSearch);
 
   const handleSearch = (val: string) => {
-    setPaginationAndSearch((p) => ({ ...p, search: val }));
+    setPaginationAndSearch((prev) => ({ ...prev, search: val }));
+  };
+
+  const downloadExcel = async () => {
+    setIsDownload(true);
+    // await refetch();
+
+    if (!data?.data?.length) return;
+
+    // Membuat worksheet dari array data
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.data.map((item) => ({
+        'Kode Divisi': item.code,
+        'Nama Divisi': item.name,
+        'Jam Masuk': item.entry_time,
+        'Jam Pulang': item.leave_time
+      }))
+    );
+
+    // Membuat workbook dan menambahkan worksheet ke dalamnya
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Divisi');
+
+    // Mengunduh file Excel
+    XLSX.writeFile(workbook, 'data_divisi.xlsx');
+
+    setIsDownload(false);
   };
 
   const columnsDivision: ColumnDef<DivisionType>[] = [
@@ -85,8 +120,8 @@ const ListDivision = () => {
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                setSelectedDivision(row.original); // Simpan data divisi yang akan dihapus
-                setIsConfirmOpen(true); // Buka dialog konfirmasi
+                setSelectedDivision(row.original);
+                setIsConfirmOpen(true);
               }}
             >
               <Trash className="mr-2 h-4 w-4" /> Delete
@@ -97,11 +132,15 @@ const ListDivision = () => {
     }
   ];
 
+  useEffect(() => {
+    refetch();
+  }, [paginationAndSearch]);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <BaseInputSearch placeholder="Cari Divisi" onChange={handleSearch} />
-        <Button>
+        <Button onClick={downloadExcel} disabled={isFetching}>
           <Download className="mr-2 h-4 w-4" />
           Download
         </Button>
@@ -111,6 +150,16 @@ const ListDivision = () => {
         data={data?.data || []}
         loading={isFetching}
       />
+      <BasePagination
+        currentPage={paginationAndSearch.page}
+        itemsPerPage={paginationAndSearch.per_page}
+        totalPages={data?.pagination.total_page as number}
+        onPageChange={(page) => setPaginationAndSearch((p) => ({ ...p, page }))}
+        totalItems={data?.pagination.total_data as number}
+        onItemsPerPageChange={(itemsPerPage) =>
+          setPaginationAndSearch((p) => ({ ...p, per_page: itemsPerPage }))
+        }
+      />
       <BaseConfirm
         isOpen={isConfirmOpen}
         setIsOpen={setIsConfirmOpen}
@@ -118,6 +167,7 @@ const ListDivision = () => {
         status={status}
         textBtnConfirm="Hapus"
         title="Hapus Divisi"
+        variant="destructive"
         description={`Apakah anda yakin ingin menghapus divisi ini?`}
       />
       <UpdateDivision

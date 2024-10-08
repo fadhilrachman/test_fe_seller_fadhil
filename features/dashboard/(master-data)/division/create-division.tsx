@@ -84,7 +84,7 @@ export function CreateDivision(props: Props) {
         />
         <DialogFooter>
           <Button type="submit" form="form" loading={status == 'pending'}>
-            Save changes
+            Simpan
           </Button>
         </DialogFooter>
       </DialogContent>

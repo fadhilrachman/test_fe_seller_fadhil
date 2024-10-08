@@ -1,7 +1,7 @@
 import { useToast } from '@/components/ui/use-toast';
 import { fetcher } from '@/lib/fetcher';
 import { BaseResponseListDto, BaseResponseShowDto } from '@/types';
-import { CreateDivisionSchema } from '@/types/division';
+import { CreateDivisionSchema, DivisionType } from '@/types/division';
 import { CreateEmployeSchema, EmployeDtoType } from '@/types/employe';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
@@ -67,7 +67,7 @@ export const useCreateDivision = () => {
 };
 
 export const useListDivision = (params: any) => {
-  const query = useQuery<BaseResponseListDto<EmployeDtoType>>({
+  const query = useQuery<BaseResponseListDto<DivisionType>>({
     queryKey: ['LIST_DIVISION'],
     queryFn: async () => {
       const result = await fetcher.get('/operator/division', { params });
@@ -79,7 +79,7 @@ export const useListDivision = (params: any) => {
 };
 
 export const useDivisionById = (id: string) => {
-  const query = useQuery<BaseResponseShowDto<EmployeDtoType>>({
+  const query = useQuery<BaseResponseShowDto<DivisionType>>({
     queryKey: ['DIVISION_BY_ID'],
     queryFn: async () => {
       const result = await fetcher.get(`/operator/division/${id}`);

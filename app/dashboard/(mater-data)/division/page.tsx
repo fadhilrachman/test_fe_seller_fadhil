@@ -10,7 +10,7 @@ import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 const breadcrumbItems = [
-  { title: 'Dashboard', link: '/dashboard' },
+  { title: 'Master Data', link: '/dashboard', current: true },
   { title: 'Divisi', link: '/dashboard/division' }
 ];
 

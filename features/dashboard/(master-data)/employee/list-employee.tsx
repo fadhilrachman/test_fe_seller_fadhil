@@ -1,6 +1,6 @@
 'use client';
 import { useListEmployee } from '@/hooks/useEmployee';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,14 +17,21 @@ import { Button } from '@/components/ui/button';
 import { Edit, Eye, MoreHorizontal, Trash } from 'lucide-react';
 import { UpdateEmployee } from './updateEmployee';
 import { useRouter } from 'next/navigation';
+import BasePagination from '@/components/base-pagination';
+import BaseInputSearch from '@/components/base-input-search';
 
 const ListEmployee = () => {
-  const { data } = useListEmployee({});
+  const { data, refetch } = useListEmployee({});
   const [dataEmployee, setDataEmployee] = React.useState<EmployeDtoType | null>(
     null
   );
   const [modalUpdate, setModalUpdate] = useState(false);
   const router = useRouter();
+  const [paginationAndSearch, setPaginationAndSearch] = useState({
+    page: 1,
+    per_page: 10,
+    search: ''
+  });
 
   const columnsEmployee: ColumnDef<EmployeDtoType>[] = [
     {
@@ -104,15 +111,33 @@ const ListEmployee = () => {
     // }
   ];
 
+  useEffect(() => {
+    refetch();
+  }, [paginationAndSearch]);
+
   return (
     <div className="space-y-4">
       <div>
-        <Input
+        <BaseInputSearch
           placeholder={`Search Employee...`}
-          className="w-full md:max-w-sm"
+          onChange={(val) =>
+            setPaginationAndSearch((p) => ({ ...p, search: val }))
+          }
         />
       </div>
       <BaseTable columns={columnsEmployee} data={data?.data || []} />
+      <BasePagination
+        currentPage={paginationAndSearch.page}
+        itemsPerPage={paginationAndSearch.per_page}
+        totalPages={data?.pagination.total_page as number}
+        onPageChange={(page) => {
+          setPaginationAndSearch((p) => ({ ...p, page }));
+        }}
+        totalItems={data?.pagination.total_data as number}
+        onItemsPerPageChange={(itemsPerPage) => {
+          setPaginationAndSearch((p) => ({ ...p, per_page: itemsPerPage }));
+        }}
+      />
       <UpdateEmployee
         isOpen={modalUpdate}
         onClose={() => setModalUpdate(false)}

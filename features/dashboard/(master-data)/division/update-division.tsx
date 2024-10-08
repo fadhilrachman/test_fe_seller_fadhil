@@ -8,7 +8,6 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import {
   useCreateDivision,
   useListDivision,
@@ -16,25 +15,40 @@ import {
 } from '@/hooks/useDivision';
 import { CreateDivisionSchema, DivisionType } from '@/types/division';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   division: DivisionType | null;
 }
 
-// type FormData = z.infer<typeof CreateDivisionSchema>;
-
 export function UpdateDivision(props: Props) {
   const { mutate, status } = useUpdateDivision();
+
+  // Inisialisasi useForm dengan defaultValues dari props.division
   const form = useForm({
-    resolver: zodResolver(CreateDivisionSchema)
+    resolver: zodResolver(CreateDivisionSchema),
+    defaultValues: {
+      name: props.division?.name || '',
+      latitude: props.division?.location.split(',')[0] || '',
+      longitude: props.division?.location.split(',')[1] || '',
+      entry_time: props.division?.entry_time || '',
+      leave_time: props.division?.leave_time || ''
+    }
   });
 
-  const [latitude, longitude] = props.division?.location
-    ? props.division.location.split(',')
-    : ['', ''];
+  // Reset form ketika division berubah
+  useEffect(() => {
+    form.reset({
+      name: props.division?.name || '',
+      latitude: props.division?.location.split(',')[0] || '',
+      longitude: props.division?.location.split(',')[1] || '',
+      entry_time: props.division?.entry_time || '',
+      leave_time: props.division?.leave_time || ''
+    });
+  }, [props.division, form]);
 
   useEffect(() => {
     if (status == 'success') {
@@ -44,11 +58,11 @@ export function UpdateDivision(props: Props) {
 
   return (
     <Dialog open={props.isOpen} onOpenChange={props.onClose}>
-      <DialogContent className="">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle>Tambah Divisi</DialogTitle>
+          <DialogTitle>Edit Divisi</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you&apos;re done.
+            Lakukan perubahan pada divisi. Klik simpan ketika sudah selesai.
           </DialogDescription>
         </DialogHeader>
 
@@ -64,40 +78,36 @@ export function UpdateDivision(props: Props) {
               name: 'name',
               type: 'text',
               placeholder: 'IT Operation',
-              label: 'Nama Divisi',
-              defaultValue: props.division?.name
+              label: 'Nama Divisi'
             },
             {
               name: 'latitude',
               type: 'text',
-              label: 'Latitude',
-              defaultValue: latitude
+              label: 'Latitude'
             },
             {
               name: 'longitude',
               type: 'text',
-              label: 'Longitude',
-              defaultValue: longitude
+              label: 'Longitude'
             },
             {
               name: 'entry_time',
               type: 'timepicker',
               placeholder: '17:00',
-              label: 'Jam Masuk',
-              defaultValue: props.division?.entry_time
+              label: 'Jam Masuk'
             },
             {
               name: 'leave_time',
               placeholder: '17:00',
               type: 'timepicker',
-              label: 'Jam Pulang',
-              defaultValue: props.division?.leave_time
+              label: 'Jam Pulang'
             }
           ]}
         />
+
         <DialogFooter>
           <Button type="submit" form="form" loading={status == 'pending'}>
-            Save changes
+            Simpan Perubahan
           </Button>
         </DialogFooter>
       </DialogContent>
