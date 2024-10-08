@@ -19,6 +19,7 @@ type Props = {
   status: 'idle' | 'error' | 'pending' | 'success' | undefined;
   description: string;
   title: string;
+  variant?: 'outline' | 'ghost' | 'default' | 'destructive';
 };
 
 const BaseConfirm: React.FC<Props> = ({
@@ -28,6 +29,7 @@ const BaseConfirm: React.FC<Props> = ({
   status,
   description,
   title,
+  variant = 'default', // Set default value jika variant tidak didefinisikan
   textBtnConfirm
 }) => {
   useEffect(() => {
@@ -35,6 +37,20 @@ const BaseConfirm: React.FC<Props> = ({
       setIsOpen(false);
     }
   }, [status, setIsOpen]);
+
+  // Mengatur className berdasarkan variant
+  const getVariantClassName = () => {
+    switch (variant) {
+      case 'destructive':
+        return 'bg-red-600 text-white hover:bg-red-500';
+      case 'outline':
+        return 'border border-gray-300 text-gray-700 hover:bg-gray-100';
+      case 'ghost':
+        return 'bg-transparent text-gray-700 hover:bg-gray-100';
+      case 'default':
+        return '';
+    }
+  };
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -50,6 +66,7 @@ const BaseConfirm: React.FC<Props> = ({
           <AlertDialogAction
             onClick={onConfirm}
             disabled={status === 'pending'}
+            className={getVariantClassName()} // Panggil fungsi getVariantClassName()
           >
             {textBtnConfirm}
           </AlertDialogAction>

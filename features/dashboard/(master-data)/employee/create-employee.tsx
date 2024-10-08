@@ -2,8 +2,10 @@
 
 import FormGenerator from '@/components/form-generator';
 import { Button } from '@/components/ui/button';
+import { useListDivision } from '@/hooks/useDivision';
 import { useCreateEmployee } from '@/hooks/useEmployee';
 import { CreateDivisionSchema } from '@/types/division';
+import { CreateEmployeSchema } from '@/types/employe';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { title } from 'process';
 import React, { useEffect, useState } from 'react';
@@ -13,8 +15,9 @@ import { useForm } from 'react-hook-form';
 
 export function CreateEmployee() {
   const { mutate, status } = useCreateEmployee();
+  // const {} = useListDivision();
   const form = useForm({
-    resolver: zodResolver(CreateDivisionSchema)
+    resolver: zodResolver(CreateEmployeSchema)
   });
 
   return (
@@ -25,7 +28,7 @@ export function CreateEmployee() {
         onSubmit={(val: any) => {
           mutate(val);
         }}
-        grid={6}
+        grid={12}
         data={[
           {
             name: 'avatar',
@@ -57,9 +60,19 @@ export function CreateEmployee() {
           },
           {
             name: 'division_id',
-            type: 'text',
-            placeholder: 'Code',
-            label: 'Code Divisi'
+            type: 'select',
+            placeholder: 'Front end',
+            label: 'Divisi',
+            options: [
+              {
+                id: '1',
+                label: 'Front end'
+              },
+              {
+                id: '2',
+                label: 'Back end'
+              }
+            ]
           },
           {
             name: 'address',

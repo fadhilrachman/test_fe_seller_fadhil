@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { FormMasterShifting } from './form-master-shifting';
+import BasePagination from '@/components/base-pagination';
 
 const ListMasterShifting = () => {
   const [dialog, setDialog] = useState({ update: false, delete: false });
@@ -104,6 +105,18 @@ const ListMasterShifting = () => {
         columns={columns}
         data={data?.data || []}
         loading={isFetching}
+      />
+      <BasePagination
+        currentPage={paginationAndSearch.page}
+        itemsPerPage={paginationAndSearch.per_page}
+        totalPages={data?.pagination.total_page as number}
+        onPageChange={(page) => {
+          setPaginationAndSearch((p) => ({ ...p, page }));
+        }}
+        totalItems={data?.pagination.total_data as number}
+        onItemsPerPageChange={(itemsPerPage) => {
+          setPaginationAndSearch((p) => ({ ...p, per_page: itemsPerPage }));
+        }}
       />
       <FormMasterShifting
         typeForm="update"

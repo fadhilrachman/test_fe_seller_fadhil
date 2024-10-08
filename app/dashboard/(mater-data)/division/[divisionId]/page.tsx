@@ -3,7 +3,7 @@
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import DetailDivision from '@/features/dashboard/(master-data)/division/detail-division';
 const breadcrumbItems = [
-  { title: 'Dashboard', link: '/dashboard' },
+  { title: 'Master Data', link: '/dashboard', current: true },
   { title: 'Divisi', link: '/dashboard/division' },
   { title: 'Detail Divisi', link: '/dashboard/division' }
 ];
@@ -14,7 +14,7 @@ type paramsProps = {
   };
 };
 
-export default async function page({ searchParams }: paramsProps) {
+export default function page({ searchParams }: paramsProps) {
   return (
     <div>
       <div className="space-y-4">

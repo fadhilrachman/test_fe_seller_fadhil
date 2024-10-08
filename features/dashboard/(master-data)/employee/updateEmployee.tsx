@@ -33,10 +33,6 @@ export function UpdateEmployee(props: Props) {
     resolver: zodResolver(CreateDivisionSchema)
   });
 
-  const [latitude, longitude] = props.division?.location
-    ? props.division.location.split(',')
-    : ['', ''];
-
   useEffect(() => {
     if (status == 'success') {
       props.onClose();
@@ -66,33 +62,33 @@ export function UpdateEmployee(props: Props) {
               type: 'text',
               placeholder: 'IT Operation',
               label: 'Nama Divisi',
-              defaultValue: props.division?.name
+              defaultValue: ''
             },
             {
               name: 'latitude',
               type: 'text',
               label: 'Latitude',
-              defaultValue: latitude
+              defaultValue: ''
             },
             {
               name: 'longitude',
               type: 'text',
               label: 'Longitude',
-              defaultValue: longitude
+              defaultValue: ''
             },
             {
               name: 'entry_time',
               type: 'timepicker',
               placeholder: '17:00',
               label: 'Jam Masuk',
-              defaultValue: props.division?.entry_time
+              defaultValue: ''
             },
             {
               name: 'leave_time',
               placeholder: '17:00',
               type: 'timepicker',
               label: 'Jam Pulang',
-              defaultValue: props.division?.leave_time
+              defaultValue: ''
             }
           ]}
         />
