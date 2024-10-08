@@ -68,14 +68,14 @@ export function FormTimeOff(props: Props) {
       placeholder: '17:00',
       type: 'date',
       label: 'Tanggal Mulai',
-      grid: 2
+      grid: 6
     },
     {
       name: 'end_date',
       type: 'date',
       placeholder: '',
       label: 'Tanggal Berakhir',
-      grid: 2
+      grid: 6
     },
 
     {
@@ -99,7 +99,7 @@ export function FormTimeOff(props: Props) {
         <DialogHeader>
           <DialogTitle>Tambah Cuti</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            Tambahkan Cuti Langsung untuk Karyawan
           </DialogDescription>
         </DialogHeader>
 

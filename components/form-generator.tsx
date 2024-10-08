@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/popover';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
+import clsx from 'clsx';
 
 export interface DataFormType {
   // name:''
@@ -62,7 +63,7 @@ export interface DataFormType {
   name: string;
   placeholder?: string;
   helperText?: string;
-  grid?: number;
+  grid?: keyof typeof listColSpan;
   defaultValue?: any;
   options?: { id: string; label: string }[];
   // fieldArrayOptions?: {
@@ -78,6 +79,21 @@ interface Props {
   id: string;
   grid?: number;
 }
+const listColSpan = {
+  1: 'col-span-1',
+  2: 'col-span-2',
+  3: 'col-span-3',
+  4: 'col-span-4',
+  5: 'col-span-5',
+  6: 'col-span-6',
+  7: 'col-span-7',
+  8: 'col-span-8',
+  9: 'col-span-9',
+  10: 'col-span-10',
+  11: 'col-span-11',
+  12: 'col-span-12'
+};
+
 const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
   return (
     <Form {...form}>
@@ -99,9 +115,12 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
             return (
               <div
                 key={val.name}
-                className={`col-span-${!!val.grid ? val.grid : grid}`}
+                className={clsx(
+                  `${
+                    listColSpan[(val.grid as keyof typeof listColSpan) || grid]
+                  }`
+                )}
               >
-                {/* {!!val.grid ? val.grid : grid} */}
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -129,8 +148,8 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
 
             return (
               <div
-                className={`col-span-${
-                  !!val.grid ? val.grid : grid
+                className={`${
+                  listColSpan[(val.grid as keyof typeof listColSpan) || grid]
                 }  space-y-2`}
                 key={val.name}
               >
@@ -194,7 +213,13 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
 
           if (val.type == 'date') {
             return (
-              <div className={`col-span-${!!val.grid ? val.grid : grid}`}>
+              <div
+                className={clsx(
+                  `${
+                    listColSpan[(val.grid as keyof typeof listColSpan) || grid]
+                  }`
+                )}
+              >
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -234,7 +259,9 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
             return (
               <div
                 key={val.name}
-                className={`col-span-${!!val.grid ? val.grid : grid} space-y-2`}
+                className={`${
+                  listColSpan[(val.grid as keyof typeof listColSpan) || grid]
+                } space-y-2`}
               >
                 <p className="text-[14px]">{val.label}</p>
                 {!form.watch(val.name) ? (
@@ -325,7 +352,11 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
             return (
               <div
                 key={val.name}
-                className={`col-span-${!!val.grid ? val.grid : grid}`}
+                className={clsx(
+                  `${
+                    listColSpan[(val.grid as keyof typeof listColSpan) || grid]
+                  }`
+                )}
               >
                 <FormField
                   control={form.control}
@@ -364,7 +395,11 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
             return (
               <div
                 key={val.name}
-                className={`col-span-${!!val.grid ? val.grid : grid}`}
+                className={clsx(
+                  `${
+                    listColSpan[(val.grid as keyof typeof listColSpan) || grid]
+                  }`
+                )}
               >
                 <FormField
                   control={form.control}
@@ -388,7 +423,13 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
           }
           if (val.type == 'select') {
             return (
-              <div className={`col-span-${!!val.grid ? val.grid : grid}`}>
+              <div
+                className={clsx(
+                  `${
+                    listColSpan[(val.grid as keyof typeof listColSpan) || grid]
+                  }`
+                )}
+              >
                 <FormField
                   control={form.control}
                   name={val.name}

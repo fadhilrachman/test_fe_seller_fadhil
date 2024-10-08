@@ -19,7 +19,7 @@ const page = () => {
       {' '}
       <Breadcrumbs items={breadcrumbItems} />
       <div className="flex items-start justify-between">
-        <Heading title={`Cuti`} description="Manage Divisi" />
+        <Heading title={`Cuti`} description="Pantau riwayat Cuti Karyawan" />
 
         <Button
           onClick={() => {
