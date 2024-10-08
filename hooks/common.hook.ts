@@ -84,37 +84,3 @@ export const useListMasterShifting = (params: {
 
   return query;
 };
-
-export const useUpdateMasterShifting = () => {
-  //   const { enqueueSnackbar } = useSnackbar();
-  const navigate = useRouter();
-  const mutation = useMutation<any, Error, formData>({
-    mutationFn: async (body: formData) => {
-      const result = await fetcher.put('/operator/master-shifting', body);
-      return result.data;
-    }
-  });
-
-  useEffect(() => {
-    const status = mutation.status;
-    if (status == 'success') {
-      //   enqueueSnackbar({ message: "Success Update MASTER_SHIFTING", variant: "success" });
-      navigate.push('/master-data/master-shifting');
-    }
-
-    if (status == 'error') {
-      const error = mutation.error as AxiosError<any>;
-
-      const messageError = Object.values(
-        error.response?.data.errors?.[0] || {}
-      ) as any;
-
-      //   enqueueSnackbar({
-      //     message: messageError?.[0]?.[0] || "Internal Server Error",
-      //     variant: "error",
-      //   });
-    }
-  }, [mutation.status]);
-
-  return mutation;
-};

@@ -78,7 +78,7 @@ interface Props {
   id: string;
   grid?: number;
 }
-const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
+const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
   return (
     <Form {...form}>
       <form
@@ -97,7 +97,11 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
           }
           if (val.type === 'text' || val.type === 'email') {
             return (
-              <div key={val.name} className={`col-span-${val.grid || grid}`}>
+              <div
+                key={val.name}
+                className={`col-span-${!!val.grid ? val.grid : grid}`}
+              >
+                {/* {!!val.grid ? val.grid : grid} */}
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -125,7 +129,9 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
 
             return (
               <div
-                className={`col-span-${val.grid || grid}  space-y-2`}
+                className={`col-span-${
+                  !!val.grid ? val.grid : grid
+                }  space-y-2`}
                 key={val.name}
               >
                 <p className="text-[14px]">{val.label}</p>
@@ -188,7 +194,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
 
           if (val.type == 'date') {
             return (
-              <div className={`col-span-${val.grid || grid}`}>
+              <div className={`col-span-${!!val.grid ? val.grid : grid}`}>
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -228,7 +234,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
             return (
               <div
                 key={val.name}
-                className={`col-span-${val.grid || grid} space-y-2`}
+                className={`col-span-${!!val.grid ? val.grid : grid} space-y-2`}
               >
                 <p className="text-[14px]">{val.label}</p>
                 {!form.watch(val.name) ? (
@@ -297,13 +303,17 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
 
           if (val.type == 'timepicker') {
             const [date, setDate] = useState<any>(
-              val.defaultValue
-                ? moment(val.defaultValue, 'HH:mm').toDate()
-                : undefined
+              moment()
+                .set({
+                  hours: Number(form.getValues(val.name)?.split(':')[0] | 0),
+                  minutes: Number(form.getValues(val.name)?.split(':')[1] | 0)
+                })
+                .toDate()
             );
 
             const minuteRef = React.useRef<HTMLInputElement>(null);
             const hourRef = React.useRef<HTMLInputElement>(null);
+            console.log({ value: form.getValues(val.name) });
 
             useEffect(() => {
               form.setValue(
@@ -313,7 +323,10 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
             }, [date]);
 
             return (
-              <div key={val.name} className={`col-span-${val.grid || grid}`}>
+              <div
+                key={val.name}
+                className={`col-span-${!!val.grid ? val.grid : grid}`}
+              >
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -349,7 +362,10 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
 
           if (val.type == 'textarea') {
             return (
-              <div key={val.name} className={`col-span-${val.grid || grid}`}>
+              <div
+                key={val.name}
+                className={`col-span-${!!val.grid ? val.grid : grid}`}
+              >
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -372,7 +388,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 4 }: Props) => {
           }
           if (val.type == 'select') {
             return (
-              <div className={`col-span-${val.grid || grid}`}>
+              <div className={`col-span-${!!val.grid ? val.grid : grid}`}>
                 <FormField
                   control={form.control}
                   name={val.name}
