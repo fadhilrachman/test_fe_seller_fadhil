@@ -1,5 +1,6 @@
 import { BaseFilter } from '@/components/base-filter';
 import BaseInputSearch from '@/components/base-input-search';
+import BasePagination from '@/components/base-pagination';
 import BaseTable from '@/components/base-table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -158,6 +159,18 @@ const ListTimeOff = () => {
         columns={columns}
         data={data?.data || []}
         loading={isFetching}
+      />
+      <BasePagination
+        currentPage={paginationAndSearch.page}
+        itemsPerPage={paginationAndSearch.per_page}
+        totalPages={data?.pagination.total_page as number}
+        onPageChange={(page) => {
+          setPaginationAndSearch((p) => ({ ...p, page }));
+        }}
+        totalItems={data?.pagination.total_data as number}
+        onItemsPerPageChange={(itemsPerPage) => {
+          setPaginationAndSearch((p) => ({ ...p, per_page: itemsPerPage }));
+        }}
       />
     </div>
   );
