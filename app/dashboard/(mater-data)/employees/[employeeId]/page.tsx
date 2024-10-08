@@ -6,11 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-const breadcrumbItems = [
-  { title: 'Dashboard', link: '/dashboard' },
-  { title: 'Karyawan', link: '/dashboard/employee' },
-  { title: 'Detail Karyawan', link: '/dashboard/employee' }
-];
+import { useParams } from 'next/navigation';
 
 const dataDetail = [
   {
@@ -54,6 +50,12 @@ type paramsProps = {
 };
 
 export default async function page({ searchParams }: paramsProps) {
+  const { employeeId } = useParams();
+  const breadcrumbItems = [
+    { title: 'Dashboard', link: '/dashboard' },
+    { title: 'Karyawan', link: '/dashboard/employees' },
+    { title: 'Detail Karyawan', link: `/dashboard/employees/${employeeId}` }
+  ];
   return (
     <PageContainer>
       <div className="space-y-4">

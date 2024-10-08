@@ -33,6 +33,7 @@ const ListMasterShifting = () => {
   useEffect(() => {
     refetch();
   }, [paginationAndSearch]);
+
   const columns: ColumnDef<MasterShiftingType>[] = [
     {
       accessorKey: 'code',
