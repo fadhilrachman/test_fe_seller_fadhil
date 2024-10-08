@@ -29,14 +29,14 @@ const SignInForm = () => {
             name: 'email',
             type: 'text',
             placeholder: 'example@gmail.com',
-            grid: 3
+            grid: 6
           },
           {
             label: 'Password',
             name: 'password',
             placeholder: '******',
             type: 'text',
-            grid: 3
+            grid: 6
           }
         ]}
       />

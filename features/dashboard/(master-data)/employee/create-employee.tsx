@@ -53,18 +53,21 @@ export function CreateEmployee() {
             name: 'phone',
             placeholder: '62887665677',
             type: 'text',
-            label: 'No Telepon'
+            label: 'No Telepon',
+            grid: 6
           },
           {
             name: 'nik',
             type: 'text',
-            label: 'NIK'
+            label: 'NIK',
+            grid: 6
           },
           {
             name: 'division_id',
             type: 'select',
             placeholder: 'Front end',
             label: 'Divisi',
+            grid: 6,
             options: [
               {
                 id: '1',
@@ -80,30 +83,35 @@ export function CreateEmployee() {
             name: 'address',
             placeholder: '17:00',
             type: 'text',
+            grid: 6,
             label: 'Tempat'
           },
           {
             name: 'dob',
             placeholder: 'test',
             type: 'text',
+            grid: 6,
             label: 'Dob'
           },
           {
             name: 'pob',
             placeholder: 'test',
             type: 'text',
+            grid: 6,
             label: 'Pob'
           },
           {
             name: 'job_title',
             placeholder: 'Front end',
             type: 'text',
+            grid: 6,
             label: 'Profesi'
           },
           {
             name: 'region',
             placeholder: 'Garut',
             type: 'text',
+            grid: 6,
             label: 'Wilayah'
           }
         ]}

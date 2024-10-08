@@ -84,12 +84,12 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         id={id}
-        className={` grid  grid-cols-${grid} gap-4`}
+        className={` grid grid-cols-12 gap-4`}
       >
         {data.map((val) => {
           if (val.type == 'title') {
             return (
-              <div className="col-span-3" key={val.name}>
+              <div className={`col-span-${val.grid}`} key={val.name}>
                 <h3 className="text-2xl font-semibold">{val.label}</h3>
                 <Separator className="w-full" />
               </div>
@@ -97,11 +97,8 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
           }
           if (val.type === 'text' || val.type === 'email') {
             return (
-              <div
-                key={val.name}
-                className={`col-span-${!!val.grid ? val.grid : grid}`}
-              >
-                {/* {!!val.grid ? val.grid : grid} */}
+              <div key={val.name} className={`col-span-6`}>
+                {val.grid ? val.grid : grid}
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -129,9 +126,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
 
             return (
               <div
-                className={`col-span-${
-                  !!val.grid ? val.grid : grid
-                }  space-y-2`}
+                className={`col-span-${val.grid ? val.grid : grid}  space-y-2`}
                 key={val.name}
               >
                 <p className="text-[14px]">{val.label}</p>
@@ -194,7 +189,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
 
           if (val.type == 'date') {
             return (
-              <div className={`col-span-${!!val.grid ? val.grid : grid}`}>
+              <div className={`col-span-${val.grid ? val.grid : grid}`}>
                 <FormField
                   control={form.control}
                   name={val.name}
@@ -232,10 +227,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
               onDrop
             });
             return (
-              <div
-                key={val.name}
-                className={`col-span-${!!val.grid ? val.grid : grid} space-y-2`}
-              >
+              <div key={val.name} className={`col-span-12 space-y-2`}>
                 <p className="text-[14px]">{val.label}</p>
                 {!form.watch(val.name) ? (
                   <div
@@ -325,7 +317,9 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
             return (
               <div
                 key={val.name}
-                className={`col-span-${!!val.grid ? val.grid : grid}`}
+                className={`col-span-${
+                  val.grid !== undefined ? val.grid : grid
+                }`}
               >
                 <FormField
                   control={form.control}
@@ -364,7 +358,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
             return (
               <div
                 key={val.name}
-                className={`col-span-${!!val.grid ? val.grid : grid}`}
+                className={`col-span-${val.grid ? val.grid : grid}`}
               >
                 <FormField
                   control={form.control}
@@ -388,7 +382,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
           }
           if (val.type == 'select') {
             return (
-              <div className={`col-span-${!!val.grid ? val.grid : grid}`}>
+              <div className={`col-span-${val.grid ? val.grid : grid}`}>
                 <FormField
                   control={form.control}
                   name={val.name}
