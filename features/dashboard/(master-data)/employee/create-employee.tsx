@@ -15,7 +15,10 @@ import { useForm } from 'react-hook-form';
 
 export function CreateEmployee() {
   const { mutate, status } = useCreateEmployee();
-  const {} = useListDivision();
+  const {} = useListDivision({
+    page: 1,
+    limit: 10000
+  });
   const form = useForm({
     resolver: zodResolver(CreateEmployeSchema)
   });
@@ -39,13 +42,15 @@ export function CreateEmployee() {
             name: 'name',
             type: 'text',
             placeholder: 'John doe',
-            label: 'Nama Karyawan'
+            label: 'Nama Karyawan',
+            grid: 6
           },
           {
             name: 'email',
             type: 'email',
             label: 'Email',
-            placeholder: 'john@gmail.com'
+            placeholder: 'john@gmail.com',
+            grid: 6
           },
           {
             name: 'phone',
