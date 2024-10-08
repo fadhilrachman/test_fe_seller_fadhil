@@ -33,6 +33,7 @@ const page = () => {
       <Separator />
       <ListMasterShifting />
       <FormMasterShifting
+        typeForm="create"
         isOpen={dialog.create}
         onClose={() => {
           setDialog((p) => ({ ...p, create: false }));

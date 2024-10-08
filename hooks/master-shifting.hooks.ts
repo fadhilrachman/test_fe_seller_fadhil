@@ -82,32 +82,43 @@ export const useListMasterShifting = (params: {
   return query;
 };
 
-export const useUpdateMasterShifting = () => {
+export const useUpdateMasterShifting = (id: string) => {
   //   const { enqueueSnackbar } = useSnackbar();
-  const navigate = useRouter();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const mutation = useMutation<any, Error, formData>({
     mutationFn: async (body: formData) => {
-      const result = await fetcher.put('/operator/master-shifting', body);
+      const result = await fetcher.put(`/operator/master-shifting/${id}`, body);
       return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['LIST_MASTER_SHIFTING'] }); // Menggunakan invalidateQueries untuk memicu ulang query
     }
   });
-
   useEffect(() => {
     const status = mutation.status;
     if (status == 'success') {
-      //   enqueueSnackbar({ message: "Success Update MASTER_SHIFTING", variant: "success" });
-      navigate.push('/master-data/master-shifting');
+      const { data } = mutation;
+
+      toast({
+        description: 'Berhasil edit shifting',
+        variant: 'success'
+      });
     }
 
     if (status == 'error') {
       const error = mutation.error as AxiosError<any>;
-
-      const messageError = Object.values(
-        error.response?.data.errors?.[0] || {}
-      ) as any;
+      const messageError =
+        (Object.values(error?.response?.data?.errors[0]) as any) ||
+        'Internal Server Error';
+      toast({
+        title: 'Approval Error',
+        variant: 'destructive',
+        description: messageError
+      });
 
       //   enqueueSnackbar({
-      //     message: messageError?.[0]?.[0] || "Internal Server Error",
+      //     message: messageError[0][0] || "Internal Server Error",
       //     variant: "error",
       //   });
     }
