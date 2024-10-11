@@ -41,7 +41,7 @@ export const useCreateTimeOff = () => {
     if (status == 'success') {
       toast({
         title: 'Berhasil',
-        description: 'Berhasil membuat cuti'
+        description: 'Berhasil tambah cuti'
       });
     }
 
@@ -50,7 +50,7 @@ export const useCreateTimeOff = () => {
 
       const messageError =
         (Object.values(error.response?.data.errors?.[0] || {}) as any) ||
-        'Gagal membuat cuti';
+        'Gagal tambah cuti';
       toast({
         title: 'Gagal',
         variant: 'destructive',

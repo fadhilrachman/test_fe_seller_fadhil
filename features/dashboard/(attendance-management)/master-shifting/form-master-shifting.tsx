@@ -95,12 +95,6 @@ export function FormMasterShifting(props: Props) {
               label: 'Nama Shifting'
             },
             {
-              name: 'name',
-              type: 'text',
-              placeholder: 'Shift Pagi',
-              label: 'Nama Shifting'
-            },
-            {
               name: 'entry_hours',
               type: 'timepicker',
               placeholder: '17:00',

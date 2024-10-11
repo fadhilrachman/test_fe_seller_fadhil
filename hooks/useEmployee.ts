@@ -43,7 +43,7 @@ export const useCreateEmployee = () => {
   return mutation;
 };
 
-export const useListEmployee = (params: any) => {
+export const useListEmployee = (params: { page: number; per_page: number }) => {
   const query = useQuery<BaseResponseListDto<EmployeDtoType>>({
     queryKey: ['LIST_EMPLOYEE'],
     queryFn: async () => {
@@ -51,8 +51,11 @@ export const useListEmployee = (params: any) => {
       return result.data;
     }
   });
-
-  return query;
+  const options = query.data?.data.map((val) => ({
+    id: val.id,
+    label: val.name
+  }));
+  return { ...query, options };
 };
 
 export const useUpdateEmployee = () => {

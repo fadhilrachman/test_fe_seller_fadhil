@@ -42,6 +42,8 @@ import {
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import clsx from 'clsx';
+import { useQueryClient } from '@tanstack/react-query';
+import { useDebounce } from 'use-debounce';
 
 export interface DataFormType {
   // name:''
@@ -63,6 +65,8 @@ export interface DataFormType {
   name: string;
   placeholder?: string;
   helperText?: string;
+  loading?: boolean; /// REQUIRED IF TYPE COMOBOX
+  queryKey?: string; /// THIS IS FOR TRIGER REFETCH IN SEARCH ONCAHGE // REQUIRED IF TYPE COMOBOX
   grid?: keyof typeof listColSpan;
   defaultValue?: any;
   options?: { id: string; label: string }[];
@@ -100,6 +104,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         id={id}
+        key={id}
         className={` grid  grid-cols-${grid} gap-4`}
       >
         {data.map((val) => {
@@ -144,8 +149,18 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
           }
 
           if (val.type == 'comobox') {
+            // const [text, setText] = useState('');
+            // const [value] = useDebounce(text, 1000);
             const [open, setOpen] = React.useState(false);
+            // const queryClient = useQueryClient();
 
+            // useEffect(() => {
+            //   const queryKey = ['LIST_EMPLOYEE', { search: text }];
+            //   queryClient.getQueryData(queryKey);
+            //   // queryClient.prefetchQuery({
+            //   // queryKey: ['LIST_EMPLOYEE']
+            //   // }); // Menggunakan invalidateQueries untuk memicu ulang query
+            // }, [value]);
             return (
               <div
                 className={`${
@@ -171,38 +186,44 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className=" w-[300px] p-0">
+                  <PopoverContent className="w-[350px] p-0">
                     <Command>
-                      <CommandInput placeholder="Search framework..." />
+                      <CommandInput
+                        placeholder="Search framework..."
+                        // o
+                        // onChangeCapture={(e) =>
+                        //   setText(e.target.value as string)
+                        // }
+                      />
                       <CommandList>
+                        {/* <Spinner /> */}
                         <CommandEmpty>No framework found.</CommandEmpty>
-                        <CommandGroup>
-                          {val?.options?.map((framework) => (
-                            <CommandItem
-                              key={framework.id}
-                              value={framework.id}
-                              onSelect={(currentValue) => {
-                                form.setValue(
-                                  val.name,
-                                  currentValue === form.watch(val.name)
-                                    ? ''
-                                    : currentValue
-                                );
-                                setOpen(false);
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  'mr-2 h-4 w-4',
-                                  form.watch(val.name) === framework.id
-                                    ? 'opacity-100'
-                                    : 'opacity-0'
-                                )}
-                              />
-                              {framework.label}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
+
+                        {val?.options?.map((framework) => (
+                          <CommandItem
+                            key={framework.id}
+                            value={framework.id}
+                            onSelect={(currentValue) => {
+                              form.setValue(
+                                val.name,
+                                currentValue === form.watch(val.name)
+                                  ? ''
+                                  : currentValue
+                              );
+                              setOpen(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                'mr-2 h-4 w-4',
+                                form.watch(val.name) === framework.id
+                                  ? 'opacity-100'
+                                  : 'opacity-0'
+                              )}
+                            />
+                            {framework.label}
+                          </CommandItem>
+                        ))}
                       </CommandList>
                     </Command>
                   </PopoverContent>
@@ -340,7 +361,6 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
 
             const minuteRef = React.useRef<HTMLInputElement>(null);
             const hourRef = React.useRef<HTMLInputElement>(null);
-            console.log({ value: form.getValues(val.name) });
 
             useEffect(() => {
               form.setValue(
