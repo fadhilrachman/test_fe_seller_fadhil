@@ -45,6 +45,7 @@ const page = () => {
       <ListShifting />
       {dialog.create && (
         <FormShifting
+          typeForm="create"
           isOpen={dialog.create}
           onClose={() => {
             setDialog((p) => ({ ...p, create: false }));

@@ -1,7 +1,10 @@
 import BaseInputSearch from '@/components/base-input-search';
 import BaseTable from '@/components/base-table';
 import { Button } from '@/components/ui/button';
-import { useListMasterShifting } from '@/hooks/master-shifting.hooks';
+import {
+  useDeleteMasterShifting,
+  useListMasterShifting
+} from '@/hooks/master-shifting.hooks';
 import { MasterShiftingType } from '@/types/master-shifting.type';
 import { ColumnDef } from '@tanstack/react-table';
 import { Download, Edit, MoreHorizontal, Trash } from 'lucide-react';
@@ -15,8 +18,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { FormMasterShifting } from './form-master-shifting';
 import BasePagination from '@/components/base-pagination';
+import * as XLSX from 'xlsx';
+import moment from 'moment';
+import BaseConfirm from '@/components/modal/base-confirm';
 
 const ListMasterShifting = () => {
+  const { mutate, status } = useDeleteMasterShifting();
   const [dialog, setDialog] = useState({ update: false, delete: false });
   const [selectedData, setSelectedData] = useState<MasterShiftingType>();
   const [paginationAndSearch, setPaginationAndSearch] = useState({
@@ -31,10 +38,43 @@ const ListMasterShifting = () => {
     setPaginationAndSearch((p) => ({ ...p, search: val }));
   };
 
+  const downloadExcel = () => {
+    // await refetch();
+
+    if (!data?.data?.length) return;
+
+    // Membuat worksheet dari array data
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.data.map((item) => ({
+        'Kode Master Shifting': item.code,
+        'Nama Master Shifting': item.name,
+        'Jam Mulai': item.entry_hours,
+        'Jam Berakhir': item.leave_hours
+      }))
+    );
+
+    // Membuat workbook dan menambahkan worksheet ke dalamnya
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      `Data Master Shifting ${moment().format('YYYY-MM-DD')}`
+    );
+
+    // Mengunduh file Excel
+    XLSX.writeFile(
+      workbook,
+      `${moment().format('YYYY-MM-DD')}_data_master_shifting.xlsx`
+    );
+  };
   useEffect(() => {
     refetch();
   }, [paginationAndSearch]);
-
+  useEffect(() => {
+    if (status === 'success') {
+      setDialog((p) => ({ ...p, delete: false }));
+    }
+  }, [status]);
   const columns: ColumnDef<MasterShiftingType>[] = [
     {
       accessorKey: 'code',
@@ -84,7 +124,13 @@ const ListMasterShifting = () => {
             >
               <Edit className="mr-2 h-4 w-4" /> Update
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              // onClick={}
+              onClick={() => {
+                setSelectedData(row.original);
+                setDialog((p) => ({ ...p, delete: true }));
+              }}
+            >
               <Trash className="mr-2 h-4 w-4" /> Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -96,7 +142,7 @@ const ListMasterShifting = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <BaseInputSearch placeholder="Cari Karyawan" onChange={handleSearch} />
-        <Button>
+        <Button onClick={downloadExcel}>
           <Download className="mr-2 h-4 w-4" />
           Download
         </Button>
@@ -125,6 +171,19 @@ const ListMasterShifting = () => {
         onClose={() => {
           setDialog((p) => ({ ...p, update: false }));
         }}
+      />
+
+      <BaseConfirm
+        isOpen={dialog.delete}
+        onOpenChange={() => {
+          setDialog((p) => ({ ...p, delete: !p.delete }));
+        }}
+        onConfirm={() => mutate(selectedData?.id as string)}
+        status={status}
+        textBtnConfirm="Hapus"
+        title="Hapus Master Shifting"
+        variant="destructive"
+        description={`Apakah anda yakin ingin menghapus master shifting ini?`}
       />
     </div>
   );

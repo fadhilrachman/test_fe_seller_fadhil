@@ -156,7 +156,11 @@ const ListDivision = () => {
       />
       <BaseConfirm
         isOpen={isConfirmOpen}
-        setIsOpen={setIsConfirmOpen}
+        // setIsOpen={setIsConfirmOpen}
+        // onOpenChange={}
+        onOpenChange={() => {
+          setIsConfirmOpen(!isConfirmOpen);
+        }}
         onConfirm={() => mutate(selectedDivision?.id as string)}
         status={status}
         textBtnConfirm="Hapus"

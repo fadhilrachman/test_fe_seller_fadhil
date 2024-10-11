@@ -10,10 +10,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle
 } from '@/components/ui/alert-dialog';
+import { Button } from '../ui/button';
 
 type Props = {
   isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
+  // setIsOpen: (open: boolean) => void;
+  onOpenChange: () => void;
   textBtnConfirm: string;
   onConfirm: () => void;
   status: 'idle' | 'error' | 'pending' | 'success' | undefined;
@@ -24,20 +26,14 @@ type Props = {
 
 const BaseConfirm: React.FC<Props> = ({
   isOpen,
-  setIsOpen,
   onConfirm,
+  onOpenChange,
   status,
   description,
   title,
   variant = 'default', // Set default value jika variant tidak didefinisikan
   textBtnConfirm
 }) => {
-  useEffect(() => {
-    if (status === 'success') {
-      setIsOpen(false);
-    }
-  }, [status, setIsOpen]);
-
   // Mengatur className berdasarkan variant
   const getVariantClassName = () => {
     switch (variant) {
@@ -53,23 +49,21 @@ const BaseConfirm: React.FC<Props> = ({
   };
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
+    <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => setIsOpen(false)}>
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction
+          <AlertDialogCancel onClick={onOpenChange}>Cancel</AlertDialogCancel>
+          <Button
             onClick={onConfirm}
-            disabled={status === 'pending'}
+            loading={status === 'pending'}
             className={getVariantClassName()} // Panggil fungsi getVariantClassName()
           >
             {textBtnConfirm}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -129,18 +129,25 @@ export const useUpdateMasterShifting = (id: string) => {
 
 export const useDeleteMasterShifting = () => {
   //   const { enqueueSnackbar } = useSnackbar();
-  const mutation = useMutation<any, Error, number>({
-    mutationFn: async (id: number) => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const mutation = useMutation<any, Error, string>({
+    mutationFn: async (id: string) => {
       const result = await fetcher.delete(`/operator/master-shifting/${id}`);
       return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['LIST_MASTER_SHIFTING'] }); // Menggunakan invalidateQueries untuk memicu ulang query
     }
   });
 
   useEffect(() => {
     const status = mutation.status;
     if (status == 'success') {
-      const { data } = mutation;
-      console.log({ data });
+      toast({
+        title: 'Sukses',
+        description: 'Sukses hapus master shifting'
+      });
     }
 
     if (status == 'error') {
@@ -149,6 +156,11 @@ export const useDeleteMasterShifting = () => {
       const messageError = Object.values(
         error.response?.data.errors?.[0] || {}
       ) as any;
+      toast({
+        title: 'Error hapus master shifting',
+        variant: 'destructive',
+        description: messageError || 'Internal Server Error'
+      });
 
       //   enqueueSnackbar({
       //     message: messageError?.[0]?.[0] || "Internal Server Error",
