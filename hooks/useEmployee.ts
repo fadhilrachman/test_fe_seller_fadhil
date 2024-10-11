@@ -1,6 +1,11 @@
+import { useToast } from '@/components/ui/use-toast';
 import { fetcher } from '@/lib/fetcher';
-import { BaseResponseListDto } from '@/types';
-import { CreateEmployeSchema, EmployeDtoType } from '@/types/employe';
+import { BaseResponseListDto, BaseResponseShowDto } from '@/types';
+import {
+  CreateEmployeSchema,
+  EmployeDtoType,
+  EmployeeType
+} from '@/types/employe';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
@@ -11,6 +16,7 @@ type formData = z.infer<typeof CreateEmployeSchema>;
 type formDataUpdateEmployee = z.infer<typeof CreateEmployeSchema>;
 
 export const useCreateEmployee = () => {
+  const { toast } = useToast();
   const navigate = useRouter();
   const mutation = useMutation<any, Error, formData>({
     mutationFn: async (body: formData) => {
@@ -22,19 +28,30 @@ export const useCreateEmployee = () => {
   useEffect(() => {
     const status = mutation.status;
     if (status == 'success') {
-      //   enqueueSnackbar({ message: "Success Create Employee", variant: "success" });
-      navigate.push('/master-data/employee');
+      const { data } = mutation;
+
+      toast({
+        description: 'Success',
+        variant: 'success'
+      });
+
+      //   enqueueSnackbar({ message: "Success create employee", variant: "success" });
+      navigate.push('/employee');
     }
 
     if (status == 'error') {
       const error = mutation.error as AxiosError<any>;
-
-      const messageError = Object.values(
-        error.response?.data.errors?.[0] || {}
-      ) as any;
+      const messageError =
+        (Object.values(error?.response?.data?.errors[0]) as any) ||
+        'Internal Server Error';
+      toast({
+        title: 'Approval Error',
+        variant: 'destructive',
+        description: messageError
+      });
 
       //   enqueueSnackbar({
-      //     message: messageError?.[0]?.[0] || "Internal Server Error",
+      //     message: messageError[0][0] || "Internal Server Error",
       //     variant: "error",
       //   });
     }
@@ -55,22 +72,41 @@ export const useListEmployee = (params: any) => {
   return query;
 };
 
-export const useUpdateEmployee = () => {
-  //   const { enqueueSnackbar } = useSnackbar();
+export const useEmployeeById = (employeeId: any) => {
+  const query = useQuery<BaseResponseShowDto<EmployeeType>>({
+    queryKey: ['EMPLOYEE_BY_ID'],
+    queryFn: async () => {
+      const result = await fetcher.get(`/operator/employee/${employeeId}`);
+      return result.data;
+    }
+  });
+
+  return query;
+};
+
+export const useUpdateEmployee = (employeeId: string) => {
+  const { toast } = useToast();
   const navigate = useRouter();
   const mutation = useMutation<any, Error, formDataUpdateEmployee>({
     mutationFn: async (body: formDataUpdateEmployee) => {
-      const result = await fetcher.put('/operator/employee', body);
+      const result = await fetcher.put(
+        `/operator/employee/${employeeId}`,
+        body
+      );
       return result.data;
+    },
+    onSuccess: () => {
+      navigate.push('/dashboard/employees');
+      toast({
+        title: 'Success',
+        description: 'Success update employee',
+        variant: 'success'
+      });
     }
   });
 
   useEffect(() => {
     const status = mutation.status;
-    if (status == 'success') {
-      //   enqueueSnackbar({ message: "Success Update Employee", variant: "success" });
-      navigate.push('/master-data/employee');
-    }
 
     if (status == 'error') {
       const error = mutation.error as AxiosError<any>;
@@ -79,10 +115,11 @@ export const useUpdateEmployee = () => {
         error.response?.data.errors?.[0] || {}
       ) as any;
 
-      //   enqueueSnackbar({
-      //     message: messageError?.[0]?.[0] || "Internal Server Error",
-      //     variant: "error",
-      //   });
+      toast({
+        title: 'Error',
+        variant: 'destructive',
+        description: messageError?.[0]?.[0] || 'Internal Server Error'
+      });
     }
   }, [mutation.status]);
 

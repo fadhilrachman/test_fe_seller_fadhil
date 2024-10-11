@@ -214,6 +214,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
           if (val.type == 'date') {
             return (
               <div
+                key={val.name}
                 className={clsx(
                   `${
                     listColSpan[(val.grid as keyof typeof listColSpan) || grid]
@@ -424,6 +425,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
           if (val.type == 'select') {
             return (
               <div
+                key={val.name}
                 className={clsx(
                   `${
                     listColSpan[(val.grid as keyof typeof listColSpan) || grid]

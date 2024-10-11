@@ -15,22 +15,27 @@ import { EmployeDtoType } from '@/types/employe';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Edit, Eye, MoreHorizontal, Trash } from 'lucide-react';
-import { UpdateEmployee } from './updateEmployee';
 import { useRouter } from 'next/navigation';
 import BasePagination from '@/components/base-pagination';
 import BaseInputSearch from '@/components/base-input-search';
+import { BaseFilter } from '@/components/base-filter';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const ListEmployee = () => {
-  const { data, refetch } = useListEmployee({});
-  const [dataEmployee, setDataEmployee] = React.useState<EmployeDtoType | null>(
-    null
-  );
-  const [modalUpdate, setModalUpdate] = useState(false);
   const router = useRouter();
+  const { data, isFetching, refetch } = useListEmployee({});
+  const [isDialog, setIsDialog] = useState({
+    delete: false,
+    filter: false
+  });
+  const [filter, setFilter] = useState({
+    division_id: { id: '', label: '' }
+  });
   const [paginationAndSearch, setPaginationAndSearch] = useState({
     page: 1,
     per_page: 10,
-    search: ''
+    search: '',
+    division_id: filter.division_id.id
   });
 
   const columnsEmployee: ColumnDef<EmployeDtoType>[] = [
@@ -49,8 +54,11 @@ const ListEmployee = () => {
       cell: ({ row, column, getValue }) => (
         <div className="flex items-center space-x-1">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage
+              src={row.original.avatar || 'https://github.com/shadcn.png'}
+              alt="@shadcn"
+            />
+            <AvatarFallback>{row.original.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <span>{row.original.name}</span>
         </div>
@@ -88,18 +96,19 @@ const ListEmployee = () => {
                 router.push(`/dashboard/employees/${row.original.id}`);
               }}
             >
-              <Eye className="mr-2 h-4 w-4" /> Details
+              <Eye className="mr-2 h-4 w-4" /> Detail
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => {
-                setDataEmployee(row.original);
-                setModalUpdate(true);
-              }}
+              onClick={() =>
+                router.push(
+                  `/dashboard/employees/${row.original.id}/update-employee`
+                )
+              }
             >
-              <Edit className="mr-2 h-4 w-4" /> Update
+              <Edit className="mr-2 h-4 w-4" /> Edit
             </DropdownMenuItem>
             <DropdownMenuItem>
-              <Trash className="mr-2 h-4 w-4" /> Delete
+              <Trash className="mr-2 h-4 w-4" /> Hapus
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -118,6 +127,27 @@ const ListEmployee = () => {
   return (
     <div className="space-y-4">
       <div>
+        {data ? (
+          <BaseFilter
+            paramsFilter={filter}
+            setParamsFilter={setFilter}
+            title="Filter"
+            dataFormFilter={[
+              {
+                name: 'division',
+                label: 'Divisi',
+                type: 'select',
+                options: [
+                  { label: 'Cuti', id: 'time_off' },
+                  { label: 'Shifting', id: 'shifting' },
+                  { label: 'Absen', id: 'attendance' }
+                ]
+              }
+            ]}
+          />
+        ) : (
+          <Skeleton className="h-10 w-full" />
+        )}
         <BaseInputSearch
           placeholder={`Search Employee...`}
           onChange={(val) =>
@@ -125,7 +155,11 @@ const ListEmployee = () => {
           }
         />
       </div>
-      <BaseTable columns={columnsEmployee} data={data?.data || []} />
+      <BaseTable
+        columns={columnsEmployee}
+        data={data?.data || []}
+        loading={isFetching}
+      />
       <BasePagination
         currentPage={paginationAndSearch.page}
         itemsPerPage={paginationAndSearch.per_page}
@@ -137,11 +171,6 @@ const ListEmployee = () => {
         onItemsPerPageChange={(itemsPerPage) => {
           setPaginationAndSearch((p) => ({ ...p, per_page: itemsPerPage }));
         }}
-      />
-      <UpdateEmployee
-        isOpen={modalUpdate}
-        onClose={() => setModalUpdate(false)}
-        employee={dataEmployee}
       />
     </div>
   );
