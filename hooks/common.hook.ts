@@ -81,6 +81,9 @@ export const useListMasterShifting = (params: {
       return result.data;
     }
   });
-
-  return query;
+  const options = query.data?.data.map((val) => ({
+    id: val.code,
+    label: val.name
+  }));
+  return { ...query, options };
 };

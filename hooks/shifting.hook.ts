@@ -49,7 +49,7 @@ export const useCreateShifting = () => {
         error.response?.data.errors?.[0] || {}
       ) as any;
       toast({
-        title: 'Login Error',
+        title: 'Error tambah shifting',
         variant: 'destructive',
         description: messageError || 'Internal Server Error'
       });
@@ -80,69 +80,83 @@ export const useListShifting = (params: {
   return query;
 };
 
-// export const useUpdateShifting = () => {
-//   //   const { enqueueSnackbar } = useSnackbar();
-//   const navigate = useRouter();
-//   const mutation = useMutation<any, Error, formData>({
-//     mutationFn: async (body: formData) => {
-//       const result = await fetcher.put('/operator/shifting', body);
-//       return result.data;
-//     }
-//   });
+export const useUpdateShifting = (id: string) => {
+  const queryClient = useQueryClient();
+  //   const { enqueueSnackbar } = useSnackbar();
+  const { toast } = useToast();
+  const mutation = useMutation<any, Error, formData>({
+    mutationFn: async (body: formData) => {
+      const result = await fetcher.put(`/operator/shifting/${id}`, body);
+      return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['LIST_SHIFTING'] }); // Menggunakan invalidateQueries untuk memicu ulang query
+    }
+  });
 
-//   useEffect(() => {
-//     const status = mutation.status;
-//     if (status == 'success') {
-//       //   enqueueSnackbar({ message: "Success Update _SHIFTING", variant: "success" });
-//       navigate.push('/-data/-shifting');
-//     }
+  useEffect(() => {
+    const status = mutation.status;
+    if (status == 'success') {
+      toast({
+        title: 'Sukses',
+        variant: 'success',
+        description: 'Sukses edit shifting'
+      });
+    }
 
-//     if (status == 'error') {
-//       const error = mutation.error as AxiosError<any>;
+    if (status == 'error') {
+      const error = mutation.error as AxiosError<any>;
+      const messageError = Object.values(
+        error.response?.data.errors?.[0] || {}
+      ) as any;
+      toast({
+        title: 'Error edit shifting',
+        variant: 'destructive',
+        description: messageError || 'Internal Server Error'
+      });
+    }
+  }, [mutation.status]);
 
-//       const messageError = Object.values(
-//         error.response?.data.errors?.[0] || {}
-//       ) as any;
+  return mutation;
+};
 
-//       //   enqueueSnackbar({
-//       //     message: messageError?.[0]?.[0] || "Internal Server Error",
-//       //     variant: "error",
-//       //   });
-//     }
-//   }, [mutation.status]);
+export const useDeleteShifting = () => {
+  const queryClient = useQueryClient();
 
-//   return mutation;
-// };
+  //   const { enqueueSnackbar } = useSnackbar();
+  const { toast } = useToast();
+  const mutation = useMutation<any, Error, string>({
+    mutationFn: async (id: string) => {
+      const result = await fetcher.delete(`/operator/shifting/${id}`);
+      return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['LIST_SHIFTING'] }); // Menggunakan invalidateQueries untuk memicu ulang query
+    }
+  });
 
-// export const useDeleteShifting = () => {
-//   //   const { enqueueSnackbar } = useSnackbar();
-//   const mutation = useMutation<any, Error, number>({
-//     mutationFn: async (id: number) => {
-//       const result = await fetcher.delete(`/operator/-shifting/${id}`);
-//       return result.data;
-//     }
-//   });
+  useEffect(() => {
+    const status = mutation.status;
+    if (status == 'success') {
+      toast({
+        title: 'Sukses',
+        variant: 'success',
+        description: 'Sukses hapus shifting'
+      });
+    }
 
-//   useEffect(() => {
-//     const status = mutation.status;
-//     if (status == 'success') {
-//       const { data } = mutation;
-//       console.log({ data });
-//     }
+    if (status == 'error') {
+      const error = mutation.error as AxiosError<any>;
+      const messageError = Object.values(
+        error.response?.data.errors?.[0] || {}
+      ) as any;
+      toast({
+        title: 'Error hapus shifting',
+        variant: 'destructive',
+        description: messageError || 'Internal Server Error'
+      });
+    }
+  }, [mutation.status]);
 
-//     if (status == 'error') {
-//       const error = mutation.error as AxiosError<any>;
-
-//       const messageError = Object.values(
-//         error.response?.data.errors?.[0] || {}
-//       ) as any;
-
-//       //   enqueueSnackbar({
-//       //     message: messageError?.[0]?.[0] || "Internal Server Error",
-//       //     variant: "error",
-//       //   });
-//     }
-//   }, [mutation.status]);
-
-//   return mutation;
-// };
+  return mutation;
+};

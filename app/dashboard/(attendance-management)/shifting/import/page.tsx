@@ -5,24 +5,46 @@ import { Button } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { Input } from '@/components/ui/input';
 import { FileIcon } from 'lucide-react';
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
 const breadcrumbItems = [
   { title: 'Dashboard', link: '/dashboard' },
   { title: 'Shifting', link: '/dashboard/shifting' },
   { title: 'Import', link: '/dashboard/shifting/import' }
 ];
 const page = () => {
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    // mutate(acceptedFiles[0]);
+  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': [
+        '.xlsx'
+      ], // .xlsx
+      'application/vnd.ms-excel': ['.xls'] // .xls
+    },
+    onDropAccepted(files, event) {
+      console.log({ files });
+    },
+    onDropRejected: (fileRejections) => {
+      console.log('File ditolak karena bukan Excel:', fileRejections);
+    }
+  });
   return (
     <div className="space-y-4">
       <Breadcrumbs items={breadcrumbItems} />
       <div className="flex items-start justify-between">
         <Heading title={`Import Shifting`} description="Manage Divisi" />
       </div>
-      <div className="mx-32 mt-4 space-y-4">
-        <div className="flex cursor-pointer flex-col items-center gap-1 rounded-lg border-2 border-dashed border-gray-200 p-6">
+      <div className=" mt-4 space-y-4">
+        <div
+          {...getRootProps()}
+          className="flex  cursor-pointer flex-col items-center gap-1 rounded-lg border-2 border-dashed border-gray-200 p-6"
+        >
           <>
             {' '}
-            <Input type="file" className="hidden" />
+            <Input type="file" className="hidden" {...getInputProps()} />
             <FileIcon className="h-12 w-12" />
             <span className="text-sm font-medium text-gray-500">
               Drag and drop a file or click to browse
@@ -48,10 +70,6 @@ const page = () => {
           {
             accessorKey: 'age',
             header: 'Umur'
-          },
-          {
-            accessorKey: 'job_title',
-            header: 'Jabatan'
           },
           {
             accessorKey: 'job_title',

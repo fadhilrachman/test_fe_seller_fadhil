@@ -19,6 +19,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Download, Edit, MoreHorizontal, Trash } from 'lucide-react';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
+import * as XLSX from 'xlsx';
 
 const ListTimeOff = () => {
   const columns: ColumnDef<TimeOffType>[] = [
@@ -110,6 +111,36 @@ const ListTimeOff = () => {
     setPaginationAndSearch((p) => ({ ...p, search: val }));
   };
 
+  const downloadExcel = () => {
+    // await refetch();
+
+    if (!data?.data?.length) return;
+
+    // Membuat worksheet dari array data
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.data.map((item) => ({
+        'Nama Karyawan': item.user.name,
+        Email: item.user.email,
+        Profesi: item.user.job_title,
+        'Tanggal Mulai': moment(item.start_date).format('YYYY-MM-DD'),
+        'Tanggal Berakhir': moment(item.end_date).format('YYYY-MM-DD'),
+        'Tipe Cuti': TIME_OFF[item.type],
+        Status: STATUS[item.status]
+      }))
+    );
+
+    // Membuat workbook dan menambahkan worksheet ke dalamnya
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      `Data Cuti ${moment().format('YYYY-MM-DD')}`
+    );
+
+    // Mengunduh file Excel
+    XLSX.writeFile(workbook, `${moment().format('YYYY-MM-DD')}_data_cuti.xlsx`);
+  };
+
   useEffect(() => {
     refetch();
   }, [paginationAndSearch, filter]);
@@ -150,7 +181,7 @@ const ListTimeOff = () => {
             onChange={handleSearch}
           />
         </div>
-        <Button>
+        <Button onClick={downloadExcel}>
           <Download className="mr-2 h-4 w-4" />
           Download
         </Button>
