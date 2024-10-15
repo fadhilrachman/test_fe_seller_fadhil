@@ -44,6 +44,7 @@ import { cn } from '@/lib/utils';
 import clsx from 'clsx';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
+import { Skeleton } from './ui/skeleton';
 
 export interface DataFormType {
   // name:''
@@ -82,6 +83,7 @@ interface Props {
   onSubmit: (params: any) => void;
   id: string;
   grid?: number;
+  className?: string;
 }
 const listColSpan = {
   1: 'col-span-1',
@@ -98,14 +100,14 @@ const listColSpan = {
   12: 'col-span-12'
 };
 
-const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
+const FormGenerator = ({ form, data, onSubmit, id, className }: Props) => {
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         id={id}
         key={id}
-        className={` grid  grid-cols-${grid} gap-4`}
+        className={`${className} grid  grid-cols-12 gap-4`}
       >
         {data.map((val) => {
           if (val.type == 'title') {
@@ -121,9 +123,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
               <div
                 key={val.name}
                 className={clsx(
-                  `${
-                    listColSpan[(val.grid as keyof typeof listColSpan) || grid]
-                  }`
+                  `${listColSpan[(val.grid as keyof typeof listColSpan) || 12]}`
                 )}
               >
                 <FormField
@@ -164,70 +164,80 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
             return (
               <div
                 className={`${
-                  listColSpan[(val.grid as keyof typeof listColSpan) || grid]
+                  listColSpan[(val.grid as keyof typeof listColSpan) || 12]
                 }  space-y-2`}
                 key={val.name}
               >
-                <p className="text-[14px]">{val.label}</p>
+                {val.loading ? (
+                  <div className="space-y-3">
+                    <Skeleton className="h-4 w-[100px]" />
+                    <Skeleton className=" h-9 w-full" />
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-[14px]">{val.label}</p>
 
-                <Popover open={open} onOpenChange={setOpen}>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      aria-expanded={open}
-                      className="w-full justify-between"
-                    >
-                      {form.watch(val.name)
-                        ? val?.options?.find(
-                            (framework) => framework.id === form.watch(val.name)
-                          )?.label
-                        : val.placeholder || 'Pilih'}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[350px] p-0">
-                    <Command>
-                      <CommandInput
-                        placeholder="Search framework..."
-                        // o
-                        // onChangeCapture={(e) =>
-                        //   setText(e.target.value as string)
-                        // }
-                      />
-                      <CommandList>
-                        {/* <Spinner /> */}
-                        <CommandEmpty>No framework found.</CommandEmpty>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={open}
+                          className="w-full justify-between"
+                        >
+                          {form.watch(val.name)
+                            ? val?.options?.find(
+                                (framework) =>
+                                  framework.id === form.watch(val.name)
+                              )?.label
+                            : val.placeholder || 'Pilih'}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[350px] p-0">
+                        <Command>
+                          <CommandInput
+                            placeholder="Search framework..."
+                            // o
+                            // onChangeCapture={(e) =>
+                            //   setText(e.target.value as string)
+                            // }
+                          />
+                          <CommandList>
+                            {/* <Spinner /> */}
+                            <CommandEmpty>No framework found.</CommandEmpty>
 
-                        {val?.options?.map((framework) => (
-                          <CommandItem
-                            key={framework.id}
-                            value={framework.id}
-                            onSelect={(currentValue) => {
-                              form.setValue(
-                                val.name,
-                                currentValue === form.watch(val.name)
-                                  ? ''
-                                  : currentValue
-                              );
-                              setOpen(false);
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                'mr-2 h-4 w-4',
-                                form.watch(val.name) === framework.id
-                                  ? 'opacity-100'
-                                  : 'opacity-0'
-                              )}
-                            />
-                            {framework.label}
-                          </CommandItem>
-                        ))}
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
+                            {val?.options?.map((framework) => (
+                              <CommandItem
+                                key={framework.id}
+                                value={framework.id}
+                                onSelect={(currentValue) => {
+                                  form.setValue(
+                                    val.name,
+                                    currentValue === form.watch(val.name)
+                                      ? ''
+                                      : currentValue
+                                  );
+                                  setOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    'mr-2 h-4 w-4',
+                                    form.watch(val.name) === framework.id
+                                      ? 'opacity-100'
+                                      : 'opacity-0'
+                                  )}
+                                />
+                                {framework.label}
+                              </CommandItem>
+                            ))}
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </>
+                )}
               </div>
             );
           }
@@ -236,9 +246,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
             return (
               <div
                 className={clsx(
-                  `${
-                    listColSpan[(val.grid as keyof typeof listColSpan) || grid]
-                  }`
+                  `${listColSpan[(val.grid as keyof typeof listColSpan) || 12]}`
                 )}
               >
                 <FormField
@@ -281,7 +289,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
               <div
                 key={val.name}
                 className={`${
-                  listColSpan[(val.grid as keyof typeof listColSpan) || grid]
+                  listColSpan[(val.grid as keyof typeof listColSpan) || 12]
                 } space-y-2`}
               >
                 <p className="text-[14px]">{val.label}</p>
@@ -373,9 +381,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
               <div
                 key={val.name}
                 className={clsx(
-                  `${
-                    listColSpan[(val.grid as keyof typeof listColSpan) || grid]
-                  }`
+                  `${listColSpan[(val.grid as keyof typeof listColSpan) || 12]}`
                 )}
               >
                 <FormField
@@ -416,9 +422,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
               <div
                 key={val.name}
                 className={clsx(
-                  `${
-                    listColSpan[(val.grid as keyof typeof listColSpan) || grid]
-                  }`
+                  `${listColSpan[(val.grid as keyof typeof listColSpan) || 12]}`
                 )}
               >
                 <FormField
@@ -445,9 +449,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
             return (
               <div
                 className={clsx(
-                  `${
-                    listColSpan[(val.grid as keyof typeof listColSpan) || grid]
-                  }`
+                  `${listColSpan[(val.grid as keyof typeof listColSpan) || 12]}`
                 )}
               >
                 <FormField

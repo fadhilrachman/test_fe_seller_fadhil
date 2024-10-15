@@ -160,7 +160,6 @@ function Home() {
         onSubmit={(val) => {
           console.log({ val });
         }}
-        grid="1"
       />
       <h1 className="mb-4 text-2xl font-bold">Multi-Select Component</h1>
       <MultiSelect

@@ -172,8 +172,19 @@ export const navItems: NavItem[] = [
         href: '/dashboard/time-off'
       }
     ]
+  },
+  {
+    title: 'Report',
+    href: '/dashboard/report',
+    icon: 'post',
+    label: 'Report'
+  },
+  {
+    title: 'Log Aktifitas',
+    href: '/dashboard/approval',
+    icon: 'logActivity',
+    label: 'Log Aktifitas'
   }
-
   // {
   //   title: 'Employee',
   //   href: '/dashboard/employee',

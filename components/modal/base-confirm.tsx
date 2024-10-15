@@ -56,7 +56,7 @@ const BaseConfirm: React.FC<Props> = ({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onOpenChange}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
           <Button
             onClick={onConfirm}
             loading={status === 'pending'}

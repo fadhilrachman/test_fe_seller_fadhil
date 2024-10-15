@@ -66,16 +66,27 @@ export const useCreateDivision = () => {
   return mutation;
 };
 
-export const useListDivision = (params: any) => {
+export const useListDivision = (params: {
+  page?: number;
+  per_page?: number;
+  division_id?: string;
+  enabled?: boolean;
+}) => {
   const query = useQuery<BaseResponseListDto<DivisionType>>({
     queryKey: ['LIST_DIVISION'],
+    enabled: params.enabled == undefined ? true : params.enabled,
     queryFn: async () => {
       const result = await fetcher.get('/operator/division', { params });
       return result.data;
     }
   });
 
-  return query;
+  const options = query.data?.data.map((val) => ({
+    id: val.id,
+    label: val.name
+  }));
+
+  return { ...query, options };
 };
 
 export const useDivisionById = (id: string) => {
