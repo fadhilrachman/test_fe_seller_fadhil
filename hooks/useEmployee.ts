@@ -6,7 +6,7 @@ import {
   EmployeDtoType,
   EmployeeType
 } from '@/types/employe';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -36,7 +36,7 @@ export const useCreateEmployee = () => {
       });
 
       //   enqueueSnackbar({ message: "Success create employee", variant: "success" });
-      navigate.push('/employee');
+      navigate.push('/dashboard/employees');
     }
 
     if (status == 'error') {
@@ -60,7 +60,11 @@ export const useCreateEmployee = () => {
   return mutation;
 };
 
-export const useListEmployee = (params: { page: number; per_page: number }) => {
+export const useListEmployee = (params: {
+  page: number;
+  per_page: number;
+  division_id?: string;
+}) => {
   const query = useQuery<BaseResponseListDto<EmployeDtoType>>({
     queryKey: ['LIST_EMPLOYEE'],
     queryFn: async () => {
@@ -130,19 +134,27 @@ export const useUpdateEmployee = (employeeId: string) => {
 };
 
 export const useDeleteEmployee = () => {
-  //   const { enqueueSnackbar } = useSnackbar();
-  const mutation = useMutation<any, Error, number>({
-    mutationFn: async (id: number) => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<any, Error, string>({
+    mutationFn: async (id: string) => {
       const result = await fetcher.delete(`/operator/employee/${id}`);
       return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['LIST_EMPLOYEE'] });
     }
   });
 
   useEffect(() => {
     const status = mutation.status;
-    if (status == 'success') {
-      const { data } = mutation;
-      console.log({ data });
+    if (status === 'success') {
+      toast({
+        title: 'Berhasil',
+        description: 'Anda Berhasil Menghapus Karyawan',
+        variant: 'success'
+      });
     }
 
     if (status == 'error') {

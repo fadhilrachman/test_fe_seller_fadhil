@@ -19,30 +19,62 @@ import { useRouter } from 'next/navigation';
 import BasePagination from '@/components/base-pagination';
 import BaseInputSearch from '@/components/base-input-search';
 import { BaseFilter } from '@/components/base-filter';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useListDivision } from '@/hooks/useDivision';
+import BaseConfirm from '@/components/modal/base-confirm';
+import { useDeleteEmployee } from '@/hooks/useEmployee';
+import * as XLSX from 'xlsx';
+import moment from 'moment';
 
 const ListEmployee = () => {
   const router = useRouter();
-  const { data, isFetching, refetch } = useListEmployee({});
+  const [employeeId, setEmployeeId] = useState('');
   const [isDialog, setIsDialog] = useState({
     delete: false,
     filter: false
   });
   const [filter, setFilter] = useState({
-    division_id: { id: '', label: '' }
+    division: { id: '', label: '' }
   });
   const [paginationAndSearch, setPaginationAndSearch] = useState({
     page: 1,
     per_page: 10,
-    search: '',
-    division_id: filter.division_id.id
+    search: ''
   });
+
+  const { data, isFetching, refetch } = useListEmployee({
+    ...paginationAndSearch,
+    division_id: filter.division.id
+  });
+  const { data: listDivision, isFetching: isFetchingDivisi } = useListDivision({
+    per_page: 10000
+  });
+  const { mutate, status } = useDeleteEmployee();
+
+  const downloadEmployee = async () => {
+    if (!data?.data.length) return;
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.data.map((item) => ({
+        Nama: item.name,
+        Email: item.email,
+        NIK: item.nik,
+        Divisi: item.division.name,
+        Profesi: item.job_title
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Karyawan');
+
+    XLSX.writeFile(
+      workbook,
+      `${moment().format('YYYY-MM-DD')}_data_karyawan.xlsx`
+    );
+  };
 
   const columnsEmployee: ColumnDef<EmployeDtoType>[] = [
     {
       accessorKey: 'nik',
       header: 'ID KARYAWAN',
-      // size: 10
       maxSize: 3,
       enableResizing: true,
       enableColumnFilter: true,
@@ -51,7 +83,7 @@ const ListEmployee = () => {
     {
       accessorKey: 'name',
       header: 'NAME',
-      cell: ({ row, column, getValue }) => (
+      cell: ({ row }) => (
         <div className="flex items-center space-x-1">
           <Avatar className="h-8 w-8">
             <AvatarImage
@@ -107,59 +139,65 @@ const ListEmployee = () => {
             >
               <Edit className="mr-2 h-4 w-4" /> Edit
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setEmployeeId(row.original.id);
+                setIsDialog({ ...isDialog, delete: true });
+              }}
+            >
               <Trash className="mr-2 h-4 w-4" /> Hapus
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
     }
-    // {
-    //   id: 'actions',
-    //   cell: ({ row }) => <CellAction data={row.original} />
-    // }
   ];
 
   useEffect(() => {
     refetch();
-  }, [paginationAndSearch]);
+  }, [paginationAndSearch, filter]);
 
   return (
     <div className="space-y-4">
-      <div>
-        {data ? (
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center justify-center gap-4">
           <BaseFilter
             paramsFilter={filter}
             setParamsFilter={setFilter}
-            title="Filter"
             dataFormFilter={[
               {
                 name: 'division',
+                placeholder: 'Pilih Divisi',
                 label: 'Divisi',
                 type: 'select',
-                options: [
-                  { label: 'Cuti', id: 'time_off' },
-                  { label: 'Shifting', id: 'shifting' },
-                  { label: 'Absen', id: 'attendance' }
-                ]
+                options: listDivision?.data?.map((item) => ({
+                  id: item.id,
+                  label: item.name
+                }))
               }
             ]}
           />
-        ) : (
-          <Skeleton className="h-10 w-full" />
-        )}
-        <BaseInputSearch
-          placeholder={`Search Employee...`}
-          onChange={(val) =>
-            setPaginationAndSearch((p) => ({ ...p, search: val }))
-          }
-        />
+          <BaseInputSearch
+            placeholder={`Search Karyawan...`}
+            onChange={(val) =>
+              setPaginationAndSearch((p) => ({ ...p, search: val }))
+            }
+          />
+        </div>
+        <div className="space-x-4">
+          <Button onClick={() => router.push('/dashboard/employees/import')}>
+            Import
+          </Button>
+          <Button onClick={() => downloadEmployee()}>Download</Button>
+        </div>
       </div>
+
       <BaseTable
         columns={columnsEmployee}
         data={data?.data || []}
         loading={isFetching}
       />
+
       <BasePagination
         currentPage={paginationAndSearch.page}
         itemsPerPage={paginationAndSearch.per_page}
@@ -171,6 +209,19 @@ const ListEmployee = () => {
         onItemsPerPageChange={(itemsPerPage) => {
           setPaginationAndSearch((p) => ({ ...p, per_page: itemsPerPage }));
         }}
+      />
+
+      <BaseConfirm
+        isOpen={isDialog.delete}
+        onOpenChange={() => {
+          setIsDialog((prev) => ({ ...prev, delete: false }));
+        }}
+        onConfirm={() => mutate(employeeId)}
+        status={status}
+        textBtnConfirm="Hapus"
+        title="Hapus Karyawan"
+        variant="destructive"
+        description={`Apakah anda yakin ingin menghapus Karyawan ini?`}
       />
     </div>
   );

@@ -21,6 +21,7 @@ export interface EmployeDtoType {
   email: string;
   avatar: string;
   code: string;
+  phone: string;
   job_title: string;
   division: {
     id: string;
@@ -30,15 +31,19 @@ export interface EmployeDtoType {
 
 export interface EmployeeType {
   id: string;
+  avatar: string;
   name: string;
   nik: string;
   email: string;
-  avatar: string;
+  phone: string;
   address: string;
   division_id: string;
-  phone: string;
   dob: string;
   pob: string;
   job_title: string;
   region: string;
+  division: {
+    name: string;
+    id: string;
+  };
 }

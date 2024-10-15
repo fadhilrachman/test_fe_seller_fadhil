@@ -92,6 +92,7 @@ export function CreateEmployee() {
             name: 'nik',
             type: 'text',
             label: 'NIK',
+            placeholder: '123456789',
             grid: 6
           },
           {
@@ -107,7 +108,7 @@ export function CreateEmployee() {
           },
           {
             name: 'address',
-            placeholder: '17:00',
+            placeholder: 'Jl. Raya Cimahi',
             type: 'text',
             grid: 6,
             label: 'Tempat'
@@ -122,6 +123,7 @@ export function CreateEmployee() {
             name: 'pob',
             type: 'text',
             grid: 6,
+            placeholder: 'Cimahi',
             label: 'Tempat Lahir'
           },
           {
@@ -133,7 +135,7 @@ export function CreateEmployee() {
           },
           {
             name: 'region',
-            placeholder: 'Garut',
+            placeholder: 'Bandung',
             type: 'text',
             grid: 6,
             label: 'Wilayah'

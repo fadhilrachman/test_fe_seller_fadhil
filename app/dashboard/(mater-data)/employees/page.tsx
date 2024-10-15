@@ -10,7 +10,7 @@ import { CreateEmployee } from '@/features/dashboard/(master-data)/employee/crea
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 const breadcrumbItems = [
-  { title: 'Master Data', link: '/dashboard', current: true },
+  { title: 'Dashboard', link: '/dashboard' },
   { title: 'Karyawan', link: '/dashboard/employees' }
 ];
 
