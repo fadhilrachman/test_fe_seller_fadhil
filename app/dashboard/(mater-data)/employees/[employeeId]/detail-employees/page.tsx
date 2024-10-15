@@ -49,7 +49,7 @@ type paramsProps = {
   };
 };
 
-export default async function page({ searchParams }: paramsProps) {
+export default function Page({ searchParams }: paramsProps) {
   const { employeeId } = useParams();
   const breadcrumbItems = [
     { title: 'Dashboard', link: '/dashboard' },

@@ -110,7 +110,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
         {data.map((val) => {
           if (val.type == 'title') {
             return (
-              <div className="col-span-3" key={val.name}>
+              <div className={`col-span-${val.grid}`} key={val.name}>
                 <h3 className="text-2xl font-semibold">{val.label}</h3>
                 <Separator className="w-full" />
               </div>
@@ -235,6 +235,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
           if (val.type == 'date') {
             return (
               <div
+                key={val.name}
                 className={clsx(
                   `${
                     listColSpan[(val.grid as keyof typeof listColSpan) || grid]
@@ -444,6 +445,7 @@ const FormGenerator = ({ form, data, onSubmit, id, grid = 12 }: Props) => {
           if (val.type == 'select') {
             return (
               <div
+                key={val.name}
                 className={clsx(
                   `${
                     listColSpan[(val.grid as keyof typeof listColSpan) || grid]

@@ -48,6 +48,12 @@ const BaseConfirm: React.FC<Props> = ({
     }
   };
 
+  useEffect(() => {
+    if (status === 'success') {
+      onOpenChange();
+    }
+  }, [status]);
+
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogContent>

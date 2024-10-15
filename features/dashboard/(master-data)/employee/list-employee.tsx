@@ -15,29 +15,66 @@ import { EmployeDtoType } from '@/types/employe';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Edit, Eye, MoreHorizontal, Trash } from 'lucide-react';
-import { UpdateEmployee } from './updateEmployee';
 import { useRouter } from 'next/navigation';
 import BasePagination from '@/components/base-pagination';
 import BaseInputSearch from '@/components/base-input-search';
+import { BaseFilter } from '@/components/base-filter';
+import { useListDivision } from '@/hooks/useDivision';
+import BaseConfirm from '@/components/modal/base-confirm';
+import { useDeleteEmployee } from '@/hooks/useEmployee';
+import * as XLSX from 'xlsx';
+import moment from 'moment';
 
 const ListEmployee = () => {
-  const { data, refetch } = useListEmployee({});
-  const [dataEmployee, setDataEmployee] = React.useState<EmployeDtoType | null>(
-    null
-  );
-  const [modalUpdate, setModalUpdate] = useState(false);
   const router = useRouter();
+  const [employeeId, setEmployeeId] = useState('');
+  const [isDialog, setIsDialog] = useState({
+    delete: false,
+    filter: false
+  });
+  const [filter, setFilter] = useState({
+    division: { id: '', label: '' }
+  });
   const [paginationAndSearch, setPaginationAndSearch] = useState({
     page: 1,
     per_page: 10,
     search: ''
   });
 
+  const { data, isFetching, refetch } = useListEmployee({
+    ...paginationAndSearch,
+    division_id: filter.division.id
+  });
+  const { data: listDivision, isFetching: isFetchingDivisi } = useListDivision({
+    per_page: 10000
+  });
+  const { mutate, status } = useDeleteEmployee();
+
+  const downloadEmployee = async () => {
+    if (!data?.data.length) return;
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.data.map((item) => ({
+        Nama: item.name,
+        Email: item.email,
+        NIK: item.nik,
+        Divisi: item.division.name,
+        Profesi: item.job_title
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Karyawan');
+
+    XLSX.writeFile(
+      workbook,
+      `${moment().format('YYYY-MM-DD')}_data_karyawan.xlsx`
+    );
+  };
+
   const columnsEmployee: ColumnDef<EmployeDtoType>[] = [
     {
       accessorKey: 'nik',
       header: 'ID KARYAWAN',
-      // size: 10
       maxSize: 3,
       enableResizing: true,
       enableColumnFilter: true,
@@ -46,11 +83,14 @@ const ListEmployee = () => {
     {
       accessorKey: 'name',
       header: 'NAME',
-      cell: ({ row, column, getValue }) => (
+      cell: ({ row }) => (
         <div className="flex items-center space-x-1">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage
+              src={row.original.avatar || 'https://github.com/shadcn.png'}
+              alt="@shadcn"
+            />
+            <AvatarFallback>{row.original.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <span>{row.original.name}</span>
         </div>
@@ -88,44 +128,76 @@ const ListEmployee = () => {
                 router.push(`/dashboard/employees/${row.original.id}`);
               }}
             >
-              <Eye className="mr-2 h-4 w-4" /> Details
+              <Eye className="mr-2 h-4 w-4" /> Detail
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  `/dashboard/employees/${row.original.id}/update-employee`
+                )
+              }
+            >
+              <Edit className="mr-2 h-4 w-4" /> Edit
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                setDataEmployee(row.original);
-                setModalUpdate(true);
+                setEmployeeId(row.original.id);
+                setIsDialog({ ...isDialog, delete: true });
               }}
             >
-              <Edit className="mr-2 h-4 w-4" /> Update
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Trash className="mr-2 h-4 w-4" /> Delete
+              <Trash className="mr-2 h-4 w-4" /> Hapus
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
     }
-    // {
-    //   id: 'actions',
-    //   cell: ({ row }) => <CellAction data={row.original} />
-    // }
   ];
 
   useEffect(() => {
     refetch();
-  }, [paginationAndSearch]);
+  }, [paginationAndSearch, filter]);
 
   return (
     <div className="space-y-4">
-      <div>
-        <BaseInputSearch
-          placeholder={`Search Employee...`}
-          onChange={(val) =>
-            setPaginationAndSearch((p) => ({ ...p, search: val }))
-          }
-        />
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center justify-center gap-4">
+          <BaseFilter
+            paramsFilter={filter}
+            setParamsFilter={setFilter}
+            dataFormFilter={[
+              {
+                name: 'division',
+                placeholder: 'Pilih Divisi',
+                label: 'Divisi',
+                type: 'select',
+                options: listDivision?.data?.map((item) => ({
+                  id: item.id,
+                  label: item.name
+                }))
+              }
+            ]}
+          />
+          <BaseInputSearch
+            placeholder={`Search Karyawan...`}
+            onChange={(val) =>
+              setPaginationAndSearch((p) => ({ ...p, search: val }))
+            }
+          />
+        </div>
+        <div className="space-x-4">
+          <Button onClick={() => router.push('/dashboard/employees/import')}>
+            Import
+          </Button>
+          <Button onClick={() => downloadEmployee()}>Download</Button>
+        </div>
       </div>
-      <BaseTable columns={columnsEmployee} data={data?.data || []} />
+
+      <BaseTable
+        columns={columnsEmployee}
+        data={data?.data || []}
+        loading={isFetching}
+      />
+
       <BasePagination
         currentPage={paginationAndSearch.page}
         itemsPerPage={paginationAndSearch.per_page}
@@ -138,10 +210,18 @@ const ListEmployee = () => {
           setPaginationAndSearch((p) => ({ ...p, per_page: itemsPerPage }));
         }}
       />
-      <UpdateEmployee
-        isOpen={modalUpdate}
-        onClose={() => setModalUpdate(false)}
-        employee={dataEmployee}
+
+      <BaseConfirm
+        isOpen={isDialog.delete}
+        onOpenChange={() => {
+          setIsDialog((prev) => ({ ...prev, delete: false }));
+        }}
+        onConfirm={() => mutate(employeeId)}
+        status={status}
+        textBtnConfirm="Hapus"
+        title="Hapus Karyawan"
+        variant="destructive"
+        description={`Apakah anda yakin ingin menghapus Karyawan ini?`}
       />
     </div>
   );
