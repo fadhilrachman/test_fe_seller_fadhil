@@ -66,10 +66,10 @@ export const useListTimeOff = (params: {
   page: number;
   per_page: number;
   search?: string;
-  division_id?: string;
   enabled?: boolean;
   status?: 'approved' | 'rejected';
   type?: 'yearly' | 'give_birth' | 'death' | 'hajj_pilgrimage';
+  division_id?: string;
 }) => {
   const query = useQuery<BaseResponseListDto<TimeOffType>>({
     queryKey: ['LIST_TIME_OFF'],

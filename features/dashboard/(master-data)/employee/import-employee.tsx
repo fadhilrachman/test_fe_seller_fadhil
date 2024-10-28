@@ -97,8 +97,6 @@ const ImportEmployee: React.FC = () => {
     }
   ];
 
-  console.log(data);
-
   return (
     <div className="p-4">
       <div className="mb-4">

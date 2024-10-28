@@ -48,7 +48,7 @@ import { Skeleton } from './ui/skeleton';
 
 export interface DataFormType {
   // name:''
-  label: string | ReactNode;
+  label?: string | ReactNode;
   type:
     | 'text'
     | 'select'
