@@ -49,7 +49,6 @@ export function CreateDivision(props: Props) {
           onSubmit={async (val: any) => {
             await mutate(val);
           }}
-          grid={1}
           data={[
             {
               name: 'name',

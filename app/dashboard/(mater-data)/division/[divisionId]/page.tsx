@@ -3,9 +3,9 @@
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import DetailDivision from '@/features/dashboard/(master-data)/division/detail-division';
 const breadcrumbItems = [
-  { title: 'Master Data', link: '/dashboard', current: true },
+  { title: 'Dashboard', link: '/dashboard' },
   { title: 'Divisi', link: '/dashboard/division' },
-  { title: 'Detail Divisi', link: '/dashboard/division' }
+  { title: 'Detail Divisi', link: '/dashboard/division', current: true }
 ];
 
 type paramsProps = {

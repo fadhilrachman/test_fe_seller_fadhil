@@ -19,6 +19,7 @@ import { UpdateDivision } from './update-division';
 import { useRouter } from 'next/navigation';
 import BasePagination from '@/components/base-pagination';
 import * as XLSX from 'xlsx';
+import moment from 'moment';
 
 const ListDivision = () => {
   const [selectedDivision, setSelectedDivision] = useState<DivisionType | null>(
@@ -26,18 +27,13 @@ const ListDivision = () => {
   );
   const [modalUpdate, setModalUpdate] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [isDownload, setIsDownload] = useState(false);
   const [paginationAndSearch, setPaginationAndSearch] = useState({
     page: 1,
     per_page: 10,
     search: ''
   });
 
-  const { data, isFetching, refetch } = useListDivision({
-    ...paginationAndSearch,
-    per_page: isDownload ? 10000 : paginationAndSearch.per_page,
-    search: isDownload ? '' : paginationAndSearch.search
-  });
+  const { data, isFetching, refetch } = useListDivision(paginationAndSearch);
 
   const router = useRouter();
   const { mutate, status } = useDeleteDivision();
@@ -47,9 +43,6 @@ const ListDivision = () => {
   };
 
   const downloadExcel = async () => {
-    setIsDownload(true);
-    // await refetch();
-
     if (!data?.data?.length) return;
 
     // Membuat worksheet dari array data
@@ -67,9 +60,10 @@ const ListDivision = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Data Divisi');
 
     // Mengunduh file Excel
-    XLSX.writeFile(workbook, 'data_divisi.xlsx');
-
-    setIsDownload(false);
+    XLSX.writeFile(
+      workbook,
+      `${moment().format('YYYY-MM-DD')}_data_divisi.xlsx`
+    );
   };
 
   const columnsDivision: ColumnDef<DivisionType>[] = [

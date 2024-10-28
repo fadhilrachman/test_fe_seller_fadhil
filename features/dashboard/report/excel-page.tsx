@@ -1,22 +1,23 @@
 import BaseTable from '@/components/base-table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger
 } from '@/components/ui/tooltip';
-import {
-  ENTRY_STATUS_ATTENDANCE,
-  LEAVE_STATUS_ATTENDANCE
-} from '@/lib/constants';
 import { HistoryAttendanceType } from '@/types/attendance.type';
 import { ColumnDef } from '@tanstack/react-table';
 import { CircleAlert } from 'lucide-react';
 import moment from 'moment';
 import React from 'react';
-
+import {
+  ENTRY_STATUS_ATTENDANCE,
+  LEAVE_STATUS_ATTENDANCE,
+  STATUS
+} from '@/lib/constants';
 const columns: ColumnDef<HistoryAttendanceType>[] = [
   //   {
   //     accessorKey: 'name',
@@ -67,7 +68,7 @@ const columns: ColumnDef<HistoryAttendanceType>[] = [
     cell: ({ row }) => row.original.user.division?.name
   },
   {
-    accessorKey: 'entry_time',
+    accessorKey: 'id',
     header: 'Tanggal',
     cell: ({ row }) => moment(row.original.entry_time).format('DD MMMM YYYY')
   },
@@ -200,9 +201,19 @@ const columns: ColumnDef<HistoryAttendanceType>[] = [
 ];
 interface PropsType {
   dataAttendance: HistoryAttendanceType[];
+  downloadExcel: () => void;
 }
-const ExcelPage: React.FC<PropsType> = ({ dataAttendance }) => {
-  return <BaseTable columns={columns} data={dataAttendance || []} />;
+const ExcelPage: React.FC<PropsType> = ({ dataAttendance, downloadExcel }) => {
+  return (
+    <>
+      <div className="flex justify-end">
+        <Button variant={'link'} type="button" onClick={downloadExcel}>
+          Download
+        </Button>
+      </div>
+      <BaseTable columns={columns} data={dataAttendance || []} />
+    </>
+  );
 };
 
 export default ExcelPage;

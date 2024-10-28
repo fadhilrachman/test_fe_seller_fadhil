@@ -25,7 +25,7 @@ interface Props {
 }
 
 export function UpdateDivision(props: Props) {
-  const { mutate, status } = useUpdateDivision();
+  const { mutate, status } = useUpdateDivision(props?.division?.id as string);
 
   // Inisialisasi useForm dengan defaultValues dari props.division
   const form = useForm({
@@ -72,7 +72,6 @@ export function UpdateDivision(props: Props) {
           onSubmit={async (val: any) => {
             await mutate(val);
           }}
-          grid={1}
           data={[
             {
               name: 'name',

@@ -3,7 +3,12 @@ import { fetcher } from '@/lib/fetcher';
 import { BaseResponseListDto, BaseResponseShowDto } from '@/types';
 import { CreateDivisionSchema, DivisionType } from '@/types/division';
 import { CreateEmployeSchema, EmployeDtoType } from '@/types/employe';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient
+} from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -101,8 +106,9 @@ export const useDivisionById = (id: string) => {
   return query;
 };
 
-export const useUpdateDivision = () => {
-  //   const { enqueueSnackbar } = useSnackbar();
+export const useUpdateDivision = (divisionId: string) => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const navigate = useRouter();
   const mutation = useMutation<any, Error, formData>({
     mutationFn: async (body: formData) => {
@@ -113,8 +119,20 @@ export const useUpdateDivision = () => {
         leave_time,
         location: `${latitude}, ${longitude}`
       };
-      const result = await fetcher.put('/operator/division', finalyPayload);
+      const result = await fetcher.put(
+        `/operator/division/${divisionId}`,
+        finalyPayload
+      );
       return result.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['LIST_DIVISION'] });
+
+      toast({
+        title: 'Sukses',
+        description: 'Sukses update divisi',
+        variant: 'success'
+      });
     }
   });
 
@@ -122,7 +140,7 @@ export const useUpdateDivision = () => {
     const status = mutation.status;
     if (status == 'success') {
       //   enqueueSnackbar({ message: "Success Update Division", variant: "success" });
-      navigate.push('/master-data/division');
+      navigate.push('/dashboard/division');
     }
 
     if (status == 'error') {

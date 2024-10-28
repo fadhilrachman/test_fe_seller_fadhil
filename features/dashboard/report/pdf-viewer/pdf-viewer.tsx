@@ -7,13 +7,8 @@ import moment from 'moment';
 import { ColumnDef } from '@tanstack/react-table';
 import { ShiftingType } from '@/types/shifting.type';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from '@/components/ui/tooltip';
-import { CircleAlert } from 'lucide-react';
+import DataInformation from './data-information-division';
+moment.locale('id');
 const dataDetail = [
   {
     key: 'Nama',
@@ -38,13 +33,6 @@ const dataDetail = [
 ];
 
 const columns: ColumnDef<ShiftingType>[] = [
-  // {
-  //   accessorKey: 'code',
-  //   header: 'Kode',
-  //   cell: ({ row, column, getValue }) => (
-  //     <p className="!text-blue-500">{row.original.code}</p>
-  //   )
-  // },
   {
     accessorKey: 'name',
     header: 'NAMA',
@@ -81,48 +69,27 @@ const columns: ColumnDef<ShiftingType>[] = [
         <span> {row.original.master_shifting.name}</span>{' '}
       </div>
     )
-    // moment(row.original.shifting_date_end).format('DD MMMM YYYY')
   }
 ];
 
 interface PropsType {
   dataShifting: ShiftingType[];
+  reportRef: React.RefObject<HTMLDivElement>;
+  startDate: string;
+  endDate: string;
 }
-const PdfViewer: React.FC<PropsType> = ({ dataShifting }) => {
-  const reportRef = useRef<HTMLDivElement>(null);
-
-  // Function to generate PDF
-  const generatePdf = () => {
-    const input = reportRef.current;
-    if (!input) return; // Make sure the ref exists
-
-    html2canvas(input, { scale: 2 })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save('report_karyawan.pdf');
-      })
-      .catch((err) => {
-        console.error('Error generating PDF:', err);
-      });
-  };
-
+const PdfViewer: React.FC<PropsType> = ({
+  dataShifting,
+  reportRef,
+  startDate,
+  endDate
+}) => {
   return (
     <div className="relative mx-32  rounded-md border">
       <div className="flex items-end justify-between">
         <div className=" w-12 rounded-br-md rounded-tl-md bg-red-600 text-center text-white">
           PDF
         </div>
-        <p
-          onClick={generatePdf}
-          className="mr-4 cursor-pointer text-xs text-blue-500 underline"
-        >
-          Download PDF
-        </p>
       </div>
       <div ref={reportRef} className="space-y-4 p-8">
         <div className="space-y-2">
@@ -132,23 +99,16 @@ const PdfViewer: React.FC<PropsType> = ({ dataShifting }) => {
               <small> PT Cuy Sejahtera</small>
               <small className="text-neutral-500">
                 {' '}
-                Data periode tanggal 21 September 2023 - 01 Oktober 2023{' '}
+                Data periode tanggal {moment(startDate).format(
+                  'DD MMMM YYYY'
+                )}- {moment(endDate).format('DD MMMM YYYY')}{' '}
               </small>
             </div>
-            <p>Dibuat tanggal 01 Desember 2024</p>
+            <p>Dibuat tanggal {moment().format('DD MMMM YYYY')}</p>
           </div>
         </div>
         <Separator />
-        <div className="">
-          {dataDetail.map((val, index) => {
-            return (
-              <div className="flex border-b py-2" key={index}>
-                <p className="min-w-[250px]">{val.key}</p>
-                <p>: {val.value}</p>
-              </div>
-            );
-          })}
-        </div>
+        <DataInformation dataDetail={dataDetail} />
 
         <div className="">
           <h3 className="mb-4 text-xl font-semibold">Data Shifting </h3>
