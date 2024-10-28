@@ -54,7 +54,10 @@ export default function Page({ searchParams }: paramsProps) {
   const breadcrumbItems = [
     { title: 'Dashboard', link: '/dashboard' },
     { title: 'Karyawan', link: '/dashboard/employees' },
-    { title: 'Detail Karyawan', link: `/dashboard/employees/${employeeId}` }
+    {
+      title: 'Detail Karyawan',
+      link: `/dashboard/employees/${employeeId} /detail-employee`
+    }
   ];
   return (
     <PageContainer>

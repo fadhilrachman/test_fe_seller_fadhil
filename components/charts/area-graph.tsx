@@ -1,7 +1,13 @@
 'use client';
 
 import { TrendingUp } from 'lucide-react';
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  XAxis,
+  ResponsiveContainer
+} from 'recharts';
 
 import {
   Card,
@@ -17,16 +23,25 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from '@/components/ui/chart';
-const chartData = [
-  { month: 'January', desktop: 186, mobile: 80 },
-  { month: 'February', desktop: 305, mobile: 200 },
-  { month: 'March', desktop: 237, mobile: 120 },
-  { month: 'April', desktop: 73, mobile: 190 },
-  { month: 'May', desktop: 209, mobile: 130 },
-  { month: 'June', desktop: 214, mobile: 140 }
-];
 
-const chartConfig = {
+type AreaGraphProps = {
+  title: string;
+  description: string;
+  data: any[];
+  dataKeys: { key: string; label: string; colorVar: string }[];
+  footerText?: string;
+  trendingText?: string;
+  xAxisConfig?: {
+    dataKey: string;
+    tickFormatter?: (value: any) => string;
+    tickLine?: boolean;
+    axisLine?: boolean;
+    tickMargin?: number;
+  };
+  tooltipTitleFormatter?: (value: any) => string;
+};
+
+const defaultChartConfig: ChartConfig = {
   desktop: {
     label: 'Desktop',
     color: 'hsl(var(--chart-1))'
@@ -35,71 +50,82 @@ const chartConfig = {
     label: 'Mobile',
     color: 'hsl(var(--chart-2))'
   }
-} satisfies ChartConfig;
+};
 
-export function AreaGraph() {
+export function AreaGraph({
+  title,
+  description,
+  data,
+  dataKeys,
+  footerText,
+  trendingText,
+  xAxisConfig = {
+    dataKey: 'month',
+    tickFormatter: (value) => value.slice(0, 3),
+    tickLine: false,
+    axisLine: false,
+    tickMargin: 8
+  },
+  tooltipTitleFormatter = (value) => value
+}: AreaGraphProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Area Chart - Stacked</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 6 months
-        </CardDescription>
+    <Card className="flex flex-col">
+      <CardHeader className="text-center">
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-grow">
         <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[310px] w-full"
+          config={defaultChartConfig}
+          className="h-72 w-full md:h-96 lg:h-[400px]"
         >
-          <AreaChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              left: 12,
-              right: 12
-            }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dot" />}
-            />
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="var(--color-mobile)"
-              fillOpacity={0.4}
-              stroke="var(--color-mobile)"
-              stackId="a"
-            />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="var(--color-desktop)"
-              fillOpacity={0.4}
-              stroke="var(--color-desktop)"
-              stackId="a"
-            />
-          </AreaChart>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={data}
+              margin={{
+                left: 12,
+                right: 12
+              }}
+            >
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey={xAxisConfig.dataKey}
+                tickLine={xAxisConfig.tickLine}
+                axisLine={xAxisConfig.axisLine}
+                tickMargin={xAxisConfig.tickMargin}
+                tickFormatter={xAxisConfig.tickFormatter}
+                interval={0}
+                tick={{ angle: -45, textAnchor: 'end' }}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent indicator="dot" />}
+                labelFormatter={tooltipTitleFormatter}
+              />
+              {dataKeys.map(({ key, colorVar, label }) => (
+                <Area
+                  key={key}
+                  dataKey={key}
+                  name={label}
+                  type="natural"
+                  fill={`hsl(var(${colorVar}))`}
+                  fillOpacity={0.4}
+                  stroke={`hsl(var(${colorVar}))`}
+                  stackId="a"
+                />
+              ))}
+            </AreaChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
       <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
+        <div className="flex flex-col items-center space-y-2 text-sm sm:flex-row sm:justify-between sm:space-y-0">
+          {trendingText && (
             <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+              {trendingText} <TrendingUp className="h-4 w-4" />
             </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
-            </div>
-          </div>
+          )}
+          <div className="leading-none text-muted-foreground">{footerText}</div>
         </div>
       </CardFooter>
     </Card>

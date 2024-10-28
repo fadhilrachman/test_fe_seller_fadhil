@@ -68,6 +68,7 @@ export const useListShifting = (params: {
   page: number;
   per_page: number;
   search?: string;
+  division_id?: string;
 }) => {
   const query = useQuery<BaseResponseListDto<ShiftingType>>({
     queryKey: ['LIST_SHIFTING'],

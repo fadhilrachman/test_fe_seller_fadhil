@@ -125,7 +125,9 @@ const ListEmployee = () => {
 
             <DropdownMenuItem
               onClick={() => {
-                router.push(`/dashboard/employees/${row.original.id}`);
+                router.push(
+                  `/dashboard/employees/${row.original.id}/detail-employee`
+                );
               }}
             >
               <Eye className="mr-2 h-4 w-4" /> Detail
@@ -185,7 +187,9 @@ const ListEmployee = () => {
           />
         </div>
         <div className="space-x-4">
-          <Button onClick={() => router.push('/dashboard/employees/import')}>
+          <Button
+            onClick={() => router.push('/dashboard/employees/import-employees')}
+          >
             Import
           </Button>
           <Button onClick={() => downloadEmployee()}>Download</Button>

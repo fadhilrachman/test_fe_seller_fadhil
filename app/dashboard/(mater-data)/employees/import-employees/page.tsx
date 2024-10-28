@@ -19,8 +19,8 @@ import * as XLSX from 'xlsx';
 
 const breadcrumbItems = [
   { title: 'Dashboard', link: '/dashboard' },
-  { title: 'Shifting', link: '/dashboard/shifting' },
-  { title: 'Import', link: '/dashboard/shifting/import' }
+  { title: 'Karyawan', link: '/dashboard/employees' },
+  { title: 'Import', link: '/dashboard/employees/import-employees' }
 ];
 
 const Page = () => {
@@ -41,7 +41,24 @@ const Page = () => {
       const worksheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-      setEmployeeData(jsonData); // Simpan data yang diimpor ke state
+      jsonData.map((item: any) => {
+        setEmployeeData((prevData) => [
+          ...prevData,
+          {
+            name: item.Nama,
+            nik: item.NIK,
+            email: item.Email,
+            phone_number: item['Nomor Telepon'],
+            dob: item['Tanggal Lahir'],
+            pob: item['Tempat Lahir'],
+            job_title: item.Profesi,
+            division_id: item['Code Divisi'],
+            address: item.Alamat,
+            location: item.Domisili,
+            region: item.Negara
+          }
+        ]);
+      });
     };
 
     reader.readAsArrayBuffer(file);
@@ -77,7 +94,7 @@ const Page = () => {
         Alamat: 'Example Address',
         Negara: 'indonesia',
         Domisili: 'Example Location',
-        Divisi: '00834JHG73as'
+        'Code Divisi': '00834JHG73as'
       }
     ]);
 
@@ -99,7 +116,7 @@ const Page = () => {
     <div className="space-y-4">
       <Breadcrumbs items={breadcrumbItems} />
       <div className="flex items-start justify-between">
-        <Heading title={`Import Shifting`} description="Manage Divisi" />
+        <Heading title={`Import Karyawan`} description="Manage Karyawan" />
         <div className="mt-4 flex justify-end">
           <Button onClick={() => downloadExample()}>
             Download Contoh Data
@@ -150,53 +167,56 @@ const Page = () => {
       <BaseTable
         columns={[
           {
-            accessorKey: 'Nama',
-            header: 'NAME',
+            accessorKey: 'name',
+            header: 'NAMA',
             cell: ({ row }) => (
               <div className="flex items-center space-x-1">
-                <span>{row?.original?.Nama}</span>
+                <span>{row?.original?.name}</span>
               </div>
             )
           },
           {
-            accessorKey: 'NIK',
+            accessorKey: 'nik',
             header: 'NIK'
           },
           {
-            accessorKey: 'Nomor Telepon',
+            accessorKey: 'phone_number',
             header: 'NO. TELP'
           },
           {
-            accessorKey: 'Email',
+            accessorKey: 'email',
             header: 'EMAIL'
           },
           {
-            accessorKey: 'Tanggal Lahir',
-            header: 'TANGGAL LAHIR'
+            accessorKey: 'dob',
+            header: 'TANGGAL LAHIR',
+            cell: ({ row }) => (
+              <p>{moment(row.original.dob).format('DD MMMM YYYY')}</p>
+            )
           },
           {
-            accessorKey: 'Tempat Lahir',
+            accessorKey: 'pob',
             header: 'TEMPAT LAHIR'
           },
           {
-            accessorKey: 'Profesi',
+            accessorKey: 'job_title',
             header: 'PROFESI'
           },
           {
-            accessorKey: 'Alamat',
+            accessorKey: 'division_id',
+            header: 'CODE DIVISI',
+            cell: ({ row }) => <>{row.original?.division_id || 'IT'}</>
+          },
+          {
+            accessorKey: 'address',
             header: 'ALAMAT'
           },
           {
-            accessorKey: 'Negara',
+            accessorKey: 'region',
             header: 'NEGARA'
           },
           {
-            accessorKey: 'Division',
-            header: 'DIVISI',
-            cell: ({ row }) => <>{row.original?.division?.name || 'IT'}</>
-          },
-          {
-            accessorKey: 'NIK',
+            accessorKey: 'nik',
             header: 'AKSI',
             cell: ({ row }) => (
               <DropdownMenu modal={false}>

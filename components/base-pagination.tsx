@@ -35,6 +35,11 @@ const BasePagination: React.FC<BasePaginationProps> = ({
 }) => {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
+  // Hide the pagination component if there are no items
+  if (totalItems === 0) {
+    return null;
+  }
+
   // Disable navigation if there's only one page
   const isSinglePage = totalPages <= 1;
 
@@ -121,7 +126,7 @@ const BasePagination: React.FC<BasePaginationProps> = ({
           </PaginationContent>
         </Pagination>
 
-        {/* Dropdown untuk memilih jumlah data per halaman */}
+        {/* Dropdown to select items per page */}
         <Select
           value={itemsPerPage.toString()}
           onValueChange={(value) => onItemsPerPageChange(Number(value))}

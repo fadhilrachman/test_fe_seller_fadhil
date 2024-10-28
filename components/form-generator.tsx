@@ -47,7 +47,7 @@ import { useDebounce } from 'use-debounce';
 
 export interface DataFormType {
   // name:''
-  label: string | ReactNode;
+  label?: string | ReactNode;
   type:
     | 'text'
     | 'select'

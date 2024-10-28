@@ -71,6 +71,7 @@ export const useListHistoryAttendance = (params: {
   page: number;
   per_page: number;
   search?: string;
+  division_id?: string;
 }) => {
   const query = useQuery<BaseResponseListDto<HistoryAttendanceType>>({
     queryKey: ['LIST_HISTORY_ATTENDANCE'],
