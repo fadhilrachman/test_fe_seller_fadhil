@@ -67,11 +67,14 @@ export const useCreateShifting = () => {
 export const useListShifting = (params: {
   page: number;
   per_page: number;
-  search?: string;
   division_id?: string;
+  search?: string;
+  enabled?: boolean;
 }) => {
   const query = useQuery<BaseResponseListDto<ShiftingType>>({
     queryKey: ['LIST_SHIFTING'],
+    enabled: params.enabled == undefined ? true : params.enabled,
+
     queryFn: async () => {
       const result = await fetcher.get('/operator/shifting', { params });
       return result.data;

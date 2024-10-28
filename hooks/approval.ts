@@ -55,13 +55,13 @@ export const useApproval = (id: string) => {
 
     if (status == 'error') {
       const error = mutation.error as AxiosError<any>;
-      const messageError =
-        (Object.values(error?.response?.data?.errors[0]) as any) ||
-        'Internal Server Error';
+      const messageError = error?.response?.data?.errors?.[0]
+        ? Object.values(error.response.data.errors[0])[0]
+        : 'Internal Server Error';
       toast({
         title: 'Approval Error',
         variant: 'destructive',
-        description: messageError
+        description: messageError as any
       });
 
       //   enqueueSnackbar({

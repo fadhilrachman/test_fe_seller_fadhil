@@ -113,6 +113,7 @@ export default function Page() {
             Hi, Welcome back 👋
           </h2>
           <div className="hidden items-center space-x-2 md:flex">
+            {/* <CalendarDateRangePicker /> */}
             <FormGenerator
               data={[
                 {
@@ -153,7 +154,7 @@ export default function Page() {
               onSubmit={() => {}}
               id="form"
             />
-            {/* <Button>Download</Button> */}
+            <Button>Download</Button>
           </div>
         </div>
         <Tabs defaultValue="overview" className="space-y-4">
@@ -283,7 +284,6 @@ export default function Page() {
                 </CardContent>
               </Card>
               <div className="col-span-4">
-                {/* <AreaGraph /> */}
                 <AreaGraph
                   title="Absensi Karyawan"
                   description={`Menampilkan absensi karyawan pada bulan ${month} tahun ${year}`}
@@ -302,7 +302,6 @@ export default function Page() {
                 />
               </div>
               <div className="col-span-4 md:col-span-3">
-                {/* <PieGraph /> */}
                 <PieGraph
                   title="Data Shifting"
                   description="Data Shifting per Kategori"

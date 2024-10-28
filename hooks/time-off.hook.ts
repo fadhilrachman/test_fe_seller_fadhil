@@ -27,7 +27,7 @@ export const useCreateTimeOff = () => {
 
   const mutation = useMutation<any, Error, formData>({
     mutationFn: async (body: formData) => {
-      const result = await fetcher.post('/operator/announcement', body);
+      const result = await fetcher.post('/operator/time-off', body);
       return result.data;
     },
     // onSuccess untuk memicu ulang query tertentu setelah mutasi sukses
@@ -48,13 +48,13 @@ export const useCreateTimeOff = () => {
     if (status == 'error') {
       const error = mutation.error as AxiosError<any>;
 
-      const messageError =
-        (Object.values(error.response?.data.errors?.[0] || {}) as any) ||
-        'Gagal tambah cuti';
+      const messageError = error?.response?.data?.errors?.[0]
+        ? Object.values(error.response.data.errors[0])[0]
+        : 'Internal Server Error';
       toast({
         title: 'Gagal',
         variant: 'destructive',
-        description: messageError
+        description: messageError as any
       });
     }
   }, [mutation.status]);
@@ -66,12 +66,14 @@ export const useListTimeOff = (params: {
   page: number;
   per_page: number;
   search?: string;
+  enabled?: boolean;
   status?: 'approved' | 'rejected';
   type?: 'yearly' | 'give_birth' | 'death' | 'hajj_pilgrimage';
   division_id?: string;
 }) => {
   const query = useQuery<BaseResponseListDto<TimeOffType>>({
     queryKey: ['LIST_TIME_OFF'],
+    enabled: params.enabled == undefined ? true : params.enabled,
     queryFn: async () => {
       const result = await fetcher.get('/operator/time-off', { params });
       return result.data;
@@ -81,18 +83,53 @@ export const useListTimeOff = (params: {
   return query;
 };
 
-export const useUpdateAnnouncement = (id: string) => {
+export const useUpdateTimeOff = (id: string) => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const mutation = useMutation<any, Error, formData>({
     mutationFn: async (body: formData) => {
-      const result = await fetcher.put(`/operator/announcement/${id}`, body);
+      const result = await fetcher.put(`/operator/time-off/${id}`, body);
       return result.data;
     },
     // onSuccess untuk memicu ulang query tertentu setelah mutasi sukses
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['LIST_ANNOUNCMENT'] }); // Menggunakan invalidateQueries untuk memicu ulang query
+      queryClient.invalidateQueries({ queryKey: ['LIST_TIME_OFF'] }); // Menggunakan invalidateQueries untuk memicu ulang query
+    }
+  });
+  useEffect(() => {
+    const status = mutation.status;
+    if (status == 'success') {
+      toast({
+        title: 'Berhasil',
+        description: 'Berhasil edit cuti'
+      });
+    }
+
+    if (status == 'error') {
+      const error = mutation.error as AxiosError<any>;
+
+      const messageError = error?.response?.data?.errors?.[0]
+        ? Object.values(error.response.data.errors[0])[0]
+        : 'Internal Server Error';
+      toast({
+        title: 'Gagal',
+        variant: 'destructive',
+        description: messageError as any
+      });
+    }
+  }, [mutation.status]);
+
+  return mutation;
+};
+
+export const useDeleteTimeOff = () => {
+  //   const { enqueueSnackbar } = useSnackbar();
+  const { toast } = useToast();
+  const mutation = useMutation<any, Error, string>({
+    mutationFn: async (id: string) => {
+      const result = await fetcher.delete(`/operator/time-off/${id}`);
+      return result.data;
     }
   });
 
@@ -101,54 +138,21 @@ export const useUpdateAnnouncement = (id: string) => {
     if (status == 'success') {
       toast({
         title: 'Berhasil',
-        description: 'Berhasil edit pengumuman'
+        description: 'Berhasil hapus cuti'
       });
     }
 
     if (status == 'error') {
       const error = mutation.error as AxiosError<any>;
 
-      const messageError =
-        (Object.values(error.response?.data.errors?.[0] || {}) as any) ||
-        'Gagal edit pengumuman';
+      const messageError = error?.response?.data?.errors?.[0]
+        ? Object.values(error.response.data.errors[0])[0]
+        : 'Internal Server Error';
       toast({
         title: 'Gagal',
         variant: 'destructive',
-        description: messageError
+        description: messageError as any
       });
-    }
-  }, [mutation.status]);
-
-  return mutation;
-};
-
-export const useDeleteAnnouncement = () => {
-  //   const { enqueueSnackbar } = useSnackbar();
-  const mutation = useMutation<any, Error, number>({
-    mutationFn: async (id: number) => {
-      const result = await fetcher.delete(`/operator/announcement/${id}`);
-      return result.data;
-    }
-  });
-
-  useEffect(() => {
-    const status = mutation.status;
-    if (status == 'success') {
-      const { data } = mutation;
-      console.log({ data });
-    }
-
-    if (status == 'error') {
-      const error = mutation.error as AxiosError<any>;
-
-      const messageError = Object.values(
-        error.response?.data.errors?.[0] || {}
-      ) as any;
-
-      //   enqueueSnackbar({
-      //     message: messageError?.[0]?.[0] || "Internal Server Error",
-      //     variant: "error",
-      //   });
     }
   }, [mutation.status]);
 

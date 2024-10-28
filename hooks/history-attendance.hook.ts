@@ -72,9 +72,11 @@ export const useListHistoryAttendance = (params: {
   per_page: number;
   search?: string;
   division_id?: string;
+  enabled?: boolean;
 }) => {
   const query = useQuery<BaseResponseListDto<HistoryAttendanceType>>({
     queryKey: ['LIST_HISTORY_ATTENDANCE'],
+    enabled: params.enabled == undefined ? true : params.enabled,
     queryFn: async () => {
       const result = await fetcher.get('/operator/attendance/history', {
         params
