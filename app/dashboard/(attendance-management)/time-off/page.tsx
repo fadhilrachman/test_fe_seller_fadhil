@@ -34,6 +34,7 @@ const page = () => {
       <ListTimeOff />
       {dialog.create && (
         <FormTimeOff
+          typeForm="create"
           isOpen={dialog.create}
           onClose={() => {
             setDialog((p) => ({ ...p, create: false }));

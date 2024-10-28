@@ -12,7 +12,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { useListTimeOff } from '@/hooks/time-off.hook';
+import { useDeleteTimeOff, useListTimeOff } from '@/hooks/time-off.hook';
 import { STATUS, STATUS_COLOR, TIME_OFF } from '@/lib/constants';
 import { TimeOffType } from '@/types/time-off.type';
 import { ColumnDef } from '@tanstack/react-table';
@@ -20,8 +20,66 @@ import { Download, Edit, MoreHorizontal, Trash } from 'lucide-react';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import * as XLSX from 'xlsx';
+import { FormTimeOff } from './form-time-off';
+import BaseConfirm from '@/components/modal/base-confirm';
 
 const ListTimeOff = () => {
+  const [selectedData, setSelectedData] = useState<TimeOffType>();
+  const { mutate, status } = useDeleteTimeOff();
+  const [dialog, setDialog] = useState({ update: false, delete: false });
+  const [filter, setFilter] = useState({
+    type: { id: '', label: '' },
+    status: { id: '', label: '' }
+  });
+  const [paginationAndSearch, setPaginationAndSearch] = useState({
+    page: 1,
+    per_page: 10,
+    search: ''
+  });
+  const { data, refetch, isFetching } = useListTimeOff({
+    ...paginationAndSearch,
+    status: filter.status.id as any,
+    type: filter.type.id as any
+  });
+
+  const handleSearch = (val: string) => {
+    setPaginationAndSearch((p) => ({ ...p, search: val }));
+  };
+
+  const downloadExcel = () => {
+    // await refetch();
+
+    if (!data?.data?.length) return;
+
+    // Membuat worksheet dari array data
+    const worksheet = XLSX.utils.json_to_sheet(
+      data.data.map((item) => ({
+        'Nama Karyawan': item.user.name,
+        Email: item.user.email,
+        Profesi: item.user.job_title,
+        'Tanggal Mulai': moment(item.start_date).format('YYYY-MM-DD'),
+        'Tanggal Berakhir': moment(item.end_date).format('YYYY-MM-DD'),
+        'Tipe Cuti': TIME_OFF[item.type],
+        Status: STATUS[item.status]
+      }))
+    );
+
+    // Membuat workbook dan menambahkan worksheet ke dalamnya
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      `Data Cuti ${moment().format('YYYY-MM-DD')}`
+    );
+
+    // Mengunduh file Excel
+    XLSX.writeFile(workbook, `${moment().format('YYYY-MM-DD')}_data_cuti.xlsx`);
+  };
+
+  useEffect(() => {
+    refetch();
+  }, [paginationAndSearch, filter]);
+
   const columns: ColumnDef<TimeOffType>[] = [
     {
       accessorKey: 'name',
@@ -80,11 +138,19 @@ const ListTimeOff = () => {
             <DropdownMenuLabel>Aksi</DropdownMenuLabel>
 
             <DropdownMenuItem
-            // onClick={() => router.push(`/dashboard/user/${data.id}`)}
+              onClick={() => {
+                setSelectedData(row.original);
+                setDialog((p) => ({ ...p, update: true }));
+              }}
             >
               <Edit className="mr-2 h-4 w-4" /> Update
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                setSelectedData(row.original);
+                setDialog((p) => ({ ...p, delete: true }));
+              }}
+            >
               <Trash className="mr-2 h-4 w-4" /> Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -92,58 +158,6 @@ const ListTimeOff = () => {
       )
     }
   ];
-  const [filter, setFilter] = useState({
-    type: { id: '', label: '' },
-    status: { id: '', label: '' }
-  });
-  const [paginationAndSearch, setPaginationAndSearch] = useState({
-    page: 1,
-    per_page: 10,
-    search: ''
-  });
-  const { data, refetch, isFetching } = useListTimeOff({
-    ...paginationAndSearch,
-    status: filter.status.id as any,
-    type: filter.type.id as any
-  });
-
-  const handleSearch = (val: string) => {
-    setPaginationAndSearch((p) => ({ ...p, search: val }));
-  };
-
-  const downloadExcel = () => {
-    // await refetch();
-
-    if (!data?.data?.length) return;
-
-    // Membuat worksheet dari array data
-    const worksheet = XLSX.utils.json_to_sheet(
-      data.data.map((item) => ({
-        'Nama Karyawan': item.user.name,
-        Email: item.user.email,
-        Profesi: item.user.job_title,
-        'Tanggal Mulai': moment(item.start_date).format('YYYY-MM-DD'),
-        'Tanggal Berakhir': moment(item.end_date).format('YYYY-MM-DD'),
-        'Tipe Cuti': TIME_OFF[item.type],
-        Status: STATUS[item.status]
-      }))
-    );
-
-    // Membuat workbook dan menambahkan worksheet ke dalamnya
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(
-      workbook,
-      worksheet,
-      `Data Cuti ${moment().format('YYYY-MM-DD')}`
-    );
-
-    // Mengunduh file Excel
-    XLSX.writeFile(workbook, `${moment().format('YYYY-MM-DD')}_data_cuti.xlsx`);
-  };
-
-  useEffect(() => {
-    refetch();
-  }, [paginationAndSearch, filter]);
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -202,6 +216,30 @@ const ListTimeOff = () => {
         onItemsPerPageChange={(itemsPerPage) => {
           setPaginationAndSearch((p) => ({ ...p, per_page: itemsPerPage }));
         }}
+      />
+
+      {dialog.update && (
+        <FormTimeOff
+          typeForm="update"
+          isOpen={dialog.update}
+          onClose={() => {
+            setDialog((p) => ({ ...p, update: false }));
+          }}
+          data={selectedData}
+        />
+      )}
+
+      <BaseConfirm
+        isOpen={dialog.delete}
+        onOpenChange={() => {
+          setDialog((p) => ({ ...p, delete: !p.delete }));
+        }}
+        onConfirm={() => mutate(selectedData?.id as string)}
+        status={status}
+        textBtnConfirm="Hapus"
+        title="Hapus Cuti"
+        variant="destructive"
+        description={`Apakah anda yakin ingin menghapus cuti ini?`}
       />
     </div>
   );
