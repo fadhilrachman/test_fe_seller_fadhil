@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Spinner } from './spinner';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -14,10 +14,8 @@ const buttonVariants = cva(
           'bg-primary text-primary-foreground shadow hover:bg-primary/90',
         destructive:
           'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
-        approved:
-          'bg-green-500 text-destructive-foreground shadow-sm hover:bg-green-400',
         outline:
-          'border border-input bg-transparent shadow-sm hover:bg-accent hover:text-accent-foreground',
+          'border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground',
         secondary:
           'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
@@ -46,7 +44,7 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    { className, variant, size, loading = false, asChild = false, ...props },
+    { className, variant, size, asChild = false, loading = false, ...props },
     ref
   ) => {
     const Comp = asChild ? Slot : 'button';
@@ -57,7 +55,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={props.disabled || loading}
         {...props}
       >
-        {loading ? <Spinner show={true} size={'small'} /> : props.children}
+        {loading ? (
+          <div className="flex items-center space-x-2">
+            <Spinner show={true} size={'small'} />
+            <span>Loading..</span>
+          </div>
+        ) : (
+          props.children
+        )}
       </Comp>
     );
   }
