@@ -1,39 +1,12 @@
-import { Icons } from '@/components/icons';
+import { SVGProps } from 'react';
 
-export interface NavItem {
-  title: string;
-  href?: string;
-  disabled?: boolean;
-  external?: boolean;
-  icon?: keyof typeof Icons;
-  label?: string;
-  description?: string;
-  subMenu?: { title: string; href: string }[];
-}
+export type IconSvgProps = SVGProps<SVGSVGElement> & {
+  size?: number;
+};
 
-export interface NavItemWithChildren extends NavItem {
-  items: NavItemWithChildren[];
-}
-
-export interface NavItemWithOptionalChildren extends NavItem {
-  items?: NavItemWithChildren[];
-}
-
-export interface FooterItem {
-  title: string;
-  items: {
-    title: string;
-    href: string;
-    external?: boolean;
-  }[];
-}
-
-export type MainNavItem = NavItemWithOptionalChildren;
-
-export type SidebarNavItem = NavItemWithChildren;
-
-export interface BaseResponseListDto<T> {
-  data: T[];
+export interface BaseResponseList<T> {
+  message: string;
+  result: T[];
   pagination: {
     current: number;
     total_page: number;
@@ -41,6 +14,7 @@ export interface BaseResponseListDto<T> {
   };
 }
 
-export interface BaseResponseShowDto<T> {
-  data: T;
+export interface BaseResponse<T> {
+  message: string;
+  result: T;
 }

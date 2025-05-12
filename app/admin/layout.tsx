@@ -8,7 +8,7 @@ const LayoutAdmin = ({ children }: { children: React.ReactNode }) => {
       <SidebarAdmin />
       <div className=" relative w-full">
         <NavbarAdmin />
-        <div className="min-h-[90vh] bg-gray-50 p-6">{children}</div>
+        <div className="min-h-[90vh] bg-gray-100 p-6">{children}</div>
       </div>
     </div>
   );

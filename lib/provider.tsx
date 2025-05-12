@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from '@/components/ui/toaster';
 
 function Provider({ children }: React.PropsWithChildren) {
   const [client] = React.useState(
@@ -21,7 +22,12 @@ function Provider({ children }: React.PropsWithChildren) {
     })
   );
 
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={client}>
+      {children}
+      <Toaster />
+    </QueryClientProvider>
+  );
 }
 
 export default Provider;
