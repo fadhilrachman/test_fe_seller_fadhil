@@ -5,7 +5,7 @@ import { verifyToken } from '@/lib/verify-token-server';
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ article_id: string }> }
+  { params }: { params: { article_id: string } }
 ) {
   if (verifyToken(req)) {
     return Response.json(
@@ -55,7 +55,7 @@ export async function PUT(
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ article_id: string }> }
+  { params }: { params: { article_id: string } }
 ) {
   if (verifyToken(req)) {
     return Response.json(
@@ -101,19 +101,19 @@ export async function GET(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ article_id: string }> }
+  { params }: { params: { article_id: string } }
 ) {
-  // if (verifyToken(req)) {
-  //   return Response.json(
-  //     {
-  //       status: 403,
-  //       message: 'Access Denied'
-  //     },
-  //     {
-  //       status: 403
-  //     }
-  //   );
-  // }
+  if (verifyToken(req)) {
+    return Response.json(
+      {
+        status: 403,
+        message: 'Access Denied'
+      },
+      {
+        status: 403
+      }
+    );
+  }
   const { article_id } = await params;
 
   try {

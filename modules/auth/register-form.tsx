@@ -74,7 +74,7 @@ const RegisterForm = () => {
     }
   ];
   return (
-    <div className="flex h-[100vh] items-center justify-center">
+    <div className="mx-5 flex  h-[100vh] items-center justify-center">
       <Card className="mx-auto w-[400px]">
         <CardHeader>
           <CardContent className="space-y-6 px-0">
