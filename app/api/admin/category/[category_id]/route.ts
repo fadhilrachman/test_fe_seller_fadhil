@@ -5,7 +5,7 @@ import { verifyToken } from '@/lib/verify-token-server';
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { category_id: string } }
+  { params }: { params: Promise<{ category_id: string }> }
 ) {
   if (verifyToken(req)) {
     return Response.json(
@@ -18,7 +18,7 @@ export async function PUT(
       }
     );
   }
-  const { category_id } = params;
+  const { category_id } = await params;
   const { name } = await req.json();
 
   try {
