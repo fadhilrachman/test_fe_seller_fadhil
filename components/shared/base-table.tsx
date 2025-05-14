@@ -21,12 +21,14 @@ const BaseTable = ({
   data,
   columns,
   status,
-  loading = false
+  loading = false,
+  refetch
 }: {
   data: any[];
   columns: ColumnDef<any>[];
   loading?: boolean;
-  status: string;
+  status: 'error' | 'success' | 'pending';
+  refetch: () => void;
 }) => {
   const table = useReactTable({
     data,
@@ -77,7 +79,7 @@ const BaseTable = ({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  <ErrorComponent onRetry={() => {}} />
+                  <ErrorComponent onRetry={refetch} />
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
