@@ -34,6 +34,7 @@ const SidebarAdmin = () => {
         {listSidebar.map((val, key) => {
           return (
             <div
+              key={key}
               onClick={() => {
                 router.push(val.href);
               }}
