@@ -7,17 +7,17 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: { category_id: string } }
 ) {
-  // if (verifyToken(req)) {
-  //   return Response.json(
-  //     {
-  //       status: 403,
-  //       message: 'Access Denied'
-  //     },
-  //     {
-  //       status: 403
-  //     }
-  //   );
-  // }
+  if (verifyToken(req)) {
+    return Response.json(
+      {
+        status: 403,
+        message: 'Access Denied'
+      },
+      {
+        status: 403
+      }
+    );
+  }
   const { category_id } = params;
   const { name } = await req.json();
 
@@ -54,17 +54,17 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ category_id: string }> }
 ) {
-  // if (verifyToken(req)) {
-  //   return Response.json(
-  //     {
-  //       status: 403,
-  //       message: 'Access Denied'
-  //     },
-  //     {
-  //       status: 403
-  //     }
-  //   );
-  // }
+  if (verifyToken(req)) {
+    return Response.json(
+      {
+        status: 403,
+        message: 'Access Denied'
+      },
+      {
+        status: 403
+      }
+    );
+  }
   const { category_id } = await params;
 
   try {

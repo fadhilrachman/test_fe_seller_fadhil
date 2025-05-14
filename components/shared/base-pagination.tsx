@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import {
   Pagination,
   PaginationContent,
@@ -8,47 +7,30 @@ import {
   PaginationNext,
   PaginationPrevious
 } from '@/components/ui/pagination';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
 
 interface BasePaginationProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
   totalItems: number;
-  itemsPerPage: number;
-  onItemsPerPageChange: (itemsPerPage: number) => void;
 }
 
 const BasePagination: React.FC<BasePaginationProps> = ({
   currentPage,
   totalPages,
   onPageChange,
-  totalItems,
-  itemsPerPage,
-  onItemsPerPageChange
+  totalItems
 }) => {
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
-  // Hide the pagination component if there are no items
   if (totalItems === 0) {
     return null;
   }
 
-  // Disable navigation if there's only one page
   const isSinglePage = totalPages <= 1;
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="text-sm text-gray-500">
-        Menampilkan {itemsPerPage > totalItems ? totalItems : itemsPerPage} dari{' '}
-        {totalItems} data
-      </div>
+    <div className="flex items-center justify-center">
       <div className="flex items-center space-x-4">
         <Pagination>
           <PaginationContent>
@@ -125,23 +107,6 @@ const BasePagination: React.FC<BasePaginationProps> = ({
             </PaginationItem>
           </PaginationContent>
         </Pagination>
-
-        {/* Dropdown to select items per page */}
-        <Select
-          value={itemsPerPage.toString()}
-          onValueChange={(value) => onItemsPerPageChange(Number(value))}
-        >
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Items per page" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="10">10</SelectItem>
-            <SelectItem value="25">25</SelectItem>
-            <SelectItem value="50">50</SelectItem>
-            <SelectItem value="80">80</SelectItem>
-            <SelectItem value="100">100</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
     </div>
   );

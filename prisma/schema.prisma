@@ -37,7 +37,8 @@ model Article{
   content String @db.LongText
   created_at DateTime @default(now())
   update_at DateTime @updatedAt 
-  category Category[]
+  category Category? @relation(fields: [category_id], references: [id])
+  category_id String? 
 }
 
 enum Role{

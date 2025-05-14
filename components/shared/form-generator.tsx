@@ -1,62 +1,37 @@
-"use client";
-import React, { useCallback, useEffect, useState, ReactNode } from "react";
+'use client';
+import React, { ReactNode, useRef } from 'react';
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from "../ui/form";
-import { FieldValues, RegisterOptions, UseFormReturn } from "react-hook-form";
+  FormMessage
+} from '../ui/form';
+import { RegisterOptions, UseFormReturn } from 'react-hook-form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { Input } from "../ui/input";
-import { Separator } from "../ui/separator";
-import { Textarea } from "../ui/textarea";
-import { Check, ChevronsUpDown, FileIcon, Paperclip, X } from "lucide-react";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
-import clsx from "clsx";
-import { useQueryClient } from "@tanstack/react-query";
-import { useDebounce } from "use-debounce";
-import { Skeleton } from "../ui/skeleton";
+  SelectValue
+} from '../ui/select';
+import { Input } from '../ui/input';
+import clsx from 'clsx';
+import { usePostUploadFile } from '@/hooks/upload.hook';
+import { Spinner } from '../ui/spinner';
+import { Image } from 'lucide-react';
+import { Button } from '../ui/button';
+import dynamic from 'next/dynamic';
+const ReactQuill = dynamic(() => import('react-quill-new'), {
+  ssr: false
+  // loading
+});
+import 'react-quill-new/dist/quill.snow.css';
 
 export interface DataFormType {
-  // name:''
   label?: string | ReactNode;
-  type:
-    | "text"
-    | "select"
-    | "file"
-    | "date"
-    | "password"
-    | "textarea"
-    | "email"
-    | "comobox"
-    | "subtitle"
-    | "title"
-    | "timepicker"
-    | "upload"
-    | "fieldArray";
+  type: 'text' | 'select' | 'file' | 'password' | 'email' | 'reactQuill';
   name: string;
   validation?: RegisterOptions;
   placeholder?: string;
@@ -73,23 +48,31 @@ interface Props {
   id: string;
   grid?: number;
   className?: string;
+  disabled?: boolean;
 }
 const listColSpan = {
-  1: "col-span-1",
-  2: "col-span-2",
-  3: "col-span-3",
-  4: "col-span-4",
-  5: "col-span-5",
-  6: "col-span-6",
-  7: "col-span-7",
-  8: "col-span-8",
-  9: "col-span-9",
-  10: "col-span-10",
-  11: "col-span-11",
-  12: "col-span-12",
+  1: 'col-span-1',
+  2: 'col-span-2',
+  3: 'col-span-3',
+  4: 'col-span-4',
+  5: 'col-span-5',
+  6: 'col-span-6',
+  7: 'col-span-7',
+  8: 'col-span-8',
+  9: 'col-span-9',
+  10: 'col-span-10',
+  11: 'col-span-11',
+  12: 'col-span-12'
 };
 
-const FormGenerator = ({ form, data, onSubmit, id, className }: Props) => {
+const FormGenerator = ({
+  form,
+  data,
+  onSubmit,
+  id,
+  className,
+  disabled
+}: Props) => {
   return (
     <Form {...form}>
       <form
@@ -99,15 +82,7 @@ const FormGenerator = ({ form, data, onSubmit, id, className }: Props) => {
         className={`${className} grid  grid-cols-12 gap-4`}
       >
         {data.map((val) => {
-          if (val.type == "title") {
-            return (
-              <div className={`col-span-${val.grid}`} key={val.name}>
-                <h3 className="text-2xl font-semibold">{val.label}</h3>
-                <Separator className="w-full" />
-              </div>
-            );
-          }
-          if (val.type === "text" || val.type === "email") {
+          if (val.type === 'text' || val.type === 'email') {
             return (
               <div
                 key={val.name}
@@ -124,9 +99,9 @@ const FormGenerator = ({ form, data, onSubmit, id, className }: Props) => {
                       <FormLabel>{val.label}</FormLabel>
                       <FormControl>
                         <Input
-                          type={val.type} // Gunakan `val.type` untuk menyesuaikan type input
+                          disabled={disabled}
+                          type={val.type}
                           placeholder={val.placeholder}
-                          //   defaultValue={val.defaultValue}
                           {...field}
                         />
                       </FormControl>
@@ -138,122 +113,58 @@ const FormGenerator = ({ form, data, onSubmit, id, className }: Props) => {
             );
           }
 
-          if (val.type == "comobox") {
-            // const [text, setText] = useState('');
-            // const [value] = useDebounce(text, 1000);
-            const [open, setOpen] = React.useState(false);
-            // const queryClient = useQueryClient();
-
-            // useEffect(() => {
-            //   const queryKey = ['LIST_EMPLOYEE', { search: text }];
-            //   queryClient.getQueryData(queryKey);
-            //   // queryClient.prefetchQuery({
-            //   // queryKey: ['LIST_EMPLOYEE']
-            //   // }); // Menggunakan invalidateQueries untuk memicu ulang query
-            // }, [value]);
+          if (val.type === 'reactQuill') {
             return (
               <div
-                className={`${
-                  listColSpan[(val.grid as keyof typeof listColSpan) || 12]
-                }  space-y-2`}
                 key={val.name}
+                className={clsx(
+                  `${listColSpan[(val.grid as keyof typeof listColSpan) || 12]}`
+                )}
               >
-                {val.loading ? (
-                  <div className="space-y-3">
-                    <Skeleton className="h-4 w-[100px]" />
-                    <Skeleton className=" h-9 w-full" />
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-[14px]">{val.label}</p>
-
-                    <Popover open={open} onOpenChange={setOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={open}
-                          className="w-full justify-between"
-                        >
-                          {form.watch(val.name)
-                            ? val?.options?.find(
-                                (framework) =>
-                                  framework.id === form.watch(val.name)
-                              )?.label
-                            : val.placeholder || "Pilih"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[350px] p-0">
-                        <Command>
-                          <CommandInput
-                            placeholder="Search framework..."
-                            // o
-                            // onChangeCapture={(e) =>
-                            //   setText(e.target.value as string)
-                            // }
+                <FormField
+                  control={form.control}
+                  name={val.name}
+                  rules={val?.validation}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{val.label}</FormLabel>
+                      <FormControl>
+                        <div className="custom-quill-container">
+                          <ReactQuill
+                            {...field}
+                            readOnly={disabled}
+                            value={field.value}
+                            onChange={field.onChange}
+                            theme="snow"
+                            placeholder="Type a content..."
+                            modules={{
+                              toolbar: [
+                                [{ header: [1, 2, false] }],
+                                ['bold', 'italic', 'underline'],
+                                [{ list: 'ordered' }, { list: 'bullet' }],
+                                ['link', 'image'],
+                                ['clean']
+                              ]
+                            }}
+                            formats={[
+                              'header',
+                              'bold',
+                              'italic',
+                              'underline',
+                              'list',
+                              'bullet',
+                              'link',
+                              'image'
+                            ]}
                           />
-                          <CommandList>
-                            {/* <Spinner /> */}
-                            <CommandEmpty>No framework found.</CommandEmpty>
-
-                            {val?.options?.map((framework) => (
-                              <CommandItem
-                                key={framework.id}
-                                value={framework.id}
-                                onSelect={(currentValue) => {
-                                  form.setValue(
-                                    val.name,
-                                    currentValue === form.watch(val.name)
-                                      ? ""
-                                      : currentValue
-                                  );
-                                  setOpen(false);
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    form.watch(val.name) === framework.id
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {framework.label}
-                              </CommandItem>
-                            ))}
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </>
-                )}
-              </div>
-            );
-          }
-
-          if (val.type == "date") {
-            return (
-              <div
-                key={val.name}
-                className={clsx(
-                  `${listColSpan[(val.grid as keyof typeof listColSpan) || 12]}`
-                )}
-              >
-                <FormField
-                  control={form.control}
-                  name={val.name}
-                  rules={val?.validation}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{val.label}</FormLabel>
-                      <FormControl>
-                        <Input
-                          // disabled={val}
-                          type="date"
-                          placeholder={val.placeholder}
-                          {...field}
-                        />
+                          <div className="word-count">
+                            {field.value
+                              ? field.value.replace(/<[^>]*>/g, '').trim()
+                                  .length
+                              : 0}{' '}
+                            Words
+                          </div>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -262,37 +173,7 @@ const FormGenerator = ({ form, data, onSubmit, id, className }: Props) => {
               </div>
             );
           }
-
-          if (val.type == "textarea") {
-            return (
-              <div
-                key={val.name}
-                className={clsx(
-                  `${listColSpan[(val.grid as keyof typeof listColSpan) || 12]}`
-                )}
-              >
-                <FormField
-                  control={form.control}
-                  name={val.name}
-                  rules={val?.validation}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{val.label}</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          // disabled={val}
-                          placeholder={val.placeholder}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            );
-          }
-          if (val.type == "select") {
+          if (val.type == 'select') {
             return (
               <div
                 key={val.name}
@@ -308,6 +189,7 @@ const FormGenerator = ({ form, data, onSubmit, id, className }: Props) => {
                     <FormItem>
                       <FormLabel>{val.label}</FormLabel>
                       <Select
+                        disabled={disabled}
                         // disabled={loading}
                         onValueChange={field.onChange}
                         value={field.value}
@@ -334,6 +216,122 @@ const FormGenerator = ({ form, data, onSubmit, id, className }: Props) => {
                     </FormItem>
                   )}
                 />
+              </div>
+            );
+          }
+          if (val.type == 'file') {
+            const inputRef = useRef<HTMLInputElement | null>(null);
+            const { mutateAsync, status, data } = usePostUploadFile();
+
+            const handleUploadFile = async (
+              e: React.ChangeEvent<HTMLInputElement>
+            ) => {
+              form.setValue(val.name, '');
+
+              const file = e.target.files?.[0];
+              if (!file) return;
+
+              const reader = new FileReader();
+              reader.readAsDataURL(file);
+
+              reader.onload = async () => {
+                const base64String = reader.result as string;
+
+                const result = await mutateAsync({
+                  file: base64String,
+                  file_name: file.name,
+                  file_type: file.type
+                });
+                form.clearErrors(val.name);
+                form.setValue(val.name, result.response);
+              };
+
+              reader.onerror = (error) => {
+                console.error('Error reading file:', error);
+              };
+            };
+            return (
+              <div
+                key={val.name}
+                className={`${
+                  listColSpan[(val.grid as keyof typeof listColSpan) || 12]
+                } space-y-2`}
+              >
+                <p className="text-[14px] font-medium text-black">
+                  {val.label}
+                </p>
+
+                <Input
+                  {...form.register(val.name, val.validation)}
+                  id={`input-${val.name}`}
+                  type="file"
+                  className="hidden"
+                  accept="image/jpeg, image/png"
+                  ref={inputRef}
+                  onChange={handleUploadFile}
+                />
+
+                {!form.watch(val.name) ? (
+                  <label
+                    htmlFor={`input-${val.name}`}
+                    className="flex h-[163px] w-[223px] cursor-pointer flex-col items-center justify-center space-y-2 rounded-lg border-2 border-dashed border-gray-200 bg-white p-6 text-center text-slate-500"
+                  >
+                    {status === 'pending' ? (
+                      <Spinner />
+                    ) : (
+                      <>
+                        <Image className="h-[20px] w-[20px]" />
+                        <div className="space-y-0 text-xs">
+                          <span className="underline">
+                            Click to select files
+                          </span>
+                          <span>Support File Type : jpg or png</span>
+                        </div>
+                      </>
+                    )}
+                  </label>
+                ) : (
+                  <div className="w-max items-center justify-between space-y-2 rounded-md border px-4 py-2">
+                    <a
+                      target="_blank"
+                      href={form.watch(val.name)}
+                      className="flex items-center space-x-1 text-blue-500"
+                    >
+                      <img
+                        src={form.watch(val.name)}
+                        alt="File uploaded"
+                        className="max-w-[199px]"
+                      />
+                    </a>
+
+                    <Button
+                      type="button"
+                      className="underline"
+                      variant="link"
+                      onClick={() => inputRef.current?.click()} // ✅ Sekarang berfungsi
+                    >
+                      Changes
+                    </Button>
+                    <Button
+                      type="button"
+                      className="text-red-500 underline"
+                      onClick={() => {
+                        form.setError(val.name, {
+                          message: 'Please enter picture'
+                        });
+                        form.setValue(val.name, '');
+                      }}
+                      variant="link"
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                )}
+                {form.formState.errors?.[val?.name] && (
+                  <p className="text-[0.8rem] font-medium text-red-400">
+                    {form.formState.errors?.[val?.name]?.message as string}
+                  </p>
+                )}
               </div>
             );
           }

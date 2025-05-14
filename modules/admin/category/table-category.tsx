@@ -2,35 +2,17 @@
 import BaseInputSearch from '@/components/shared/base-input-search';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import React, { useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
+import React, { useEffect, useState } from 'react';
 import CreateCategory from './create-category';
 import BaseTable from '@/components/shared/base-table';
 import { ColumnDef } from '@tanstack/react-table';
 import EditCategory from './edit-category';
 import DeleteDialog from '@/components/shared/delete-dialog';
-import { useGetCategory } from '@/hooks/category.hook';
+import { useDeleteCategory, useGetCategory } from '@/hooks/category.hook';
 import moment from 'moment';
 import { CategoryType } from '@/types/category.type';
+import BasePagination from '@/components/shared/base-pagination';
 
-const data = [
-  { name: 'Catecory1', created_at: 'April 13, 2025 10:55:12' },
-  { name: 'Catecory1', created_at: 'April 13, 2025 10:55:12' },
-  { name: 'Catecory1', created_at: 'April 13, 2025 10:55:12' },
-  { name: 'Catecory1', created_at: 'April 13, 2025 10:55:12' },
-  { name: 'Catecory1', created_at: 'April 13, 2025 10:55:12' },
-  { name: 'Catecory1', created_at: 'April 13, 2025 10:55:12' },
-  { name: 'Catecory1', created_at: 'April 13, 2025 10:55:12' },
-  { name: 'Catecory1', created_at: 'April 13, 2025 10:55:12' },
-  { name: 'Catecory1', created_at: 'April 13, 2025 10:55:12' },
-  { name: 'Catecory1', created_at: 'April 13, 2025 10:55:12' }
-];
 const TableCategory = () => {
   const [dialog, setDialog] = useState({
     create: false,
@@ -39,9 +21,24 @@ const TableCategory = () => {
   });
   const [params, setParams] = useState({ search: '', page: 1, per_page: 10 });
   const [selectedData, setSelectedData] = useState<CategoryType>();
-  const { data, isFetching } = useGetCategory(params);
+  const {
+    data,
+    isFetching,
+    refetch,
+    status: statusGet
+  } = useGetCategory(params);
+  const { mutateAsync, status } = useDeleteCategory();
 
-  const columnsDivision: ColumnDef<CategoryType>[] = [
+  const handleDelete = async () => {
+    try {
+      await mutateAsync({ id: selectedData?.id || '' });
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      setDialog((p) => ({ ...p, delete: false }));
+    }
+  };
+  const columns: ColumnDef<CategoryType>[] = [
     {
       accessorKey: 'name',
       header: 'Category'
@@ -55,7 +52,7 @@ const TableCategory = () => {
     },
     {
       accessorKey: '',
-      header: 'AKSI',
+      header: 'Action',
       cell: ({ row }) => (
         <div>
           <Button
@@ -83,16 +80,25 @@ const TableCategory = () => {
     }
   ];
 
+  useEffect(() => {
+    refetch();
+  }, [params]);
   return (
     <div className="rounded-lg border bg-gray-50 ">
       <div className="border-b p-4">
         <p>Total Category : {data?.pagination?.total_data}</p>
       </div>
-      <div className="flex items-center justify-between p-4">
+      <div className="flex flex-col items-center justify-between gap-3 p-4 md:flex-row">
         <div className="flex space-x-2">
-          <BaseInputSearch onChange={() => {}} placeholder="Search category " />
+          <BaseInputSearch
+            onChange={(e) => {
+              setParams((p) => ({ ...p, search: e }));
+            }}
+            placeholder="Search category "
+          />
         </div>
         <Button
+          className="w-full md:w-max"
           onClick={() => {
             setDialog((p) => ({ ...p, create: true }));
           }}
@@ -101,11 +107,21 @@ const TableCategory = () => {
           Add Category
         </Button>
       </div>
-      <BaseTable
-        columns={columnsDivision}
-        data={data?.result || []}
-        loading={isFetching}
-      />
+      <div className="space-y-4 pb-4">
+        <BaseTable
+          status={statusGet}
+          columns={columns}
+          data={data?.result || []}
+          loading={isFetching}
+          refetch={refetch}
+        />{' '}
+        <BasePagination
+          currentPage={params.page}
+          totalPages={data?.pagination.total_page as number}
+          onPageChange={(page) => setParams((p) => ({ ...p, page }))}
+          totalItems={data?.pagination.total_data as number}
+        />
+      </div>
 
       {/* ////////////// */}
       {/* DIALOG */}
@@ -125,9 +141,10 @@ const TableCategory = () => {
       />
       <DeleteDialog
         title="Category"
-        description="Delete category “Technology”? This will remove it from master data permanently"
-        onDelete={() => {}}
+        description={`Delete category “${selectedData?.name}”? This will remove it from master data permanently`}
+        onDelete={handleDelete}
         isOpen={dialog.delete}
+        loading={status == 'pending'}
         onClose={() => {
           setDialog((p) => ({ ...p, delete: false }));
         }}

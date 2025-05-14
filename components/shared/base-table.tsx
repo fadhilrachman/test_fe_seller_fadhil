@@ -15,15 +15,18 @@ import {
   useReactTable
 } from '@tanstack/react-table';
 import { Spinner } from '../ui/spinner';
+import ErrorComponent from './error-component';
 
 const BaseTable = ({
   data,
   columns,
+  status,
   loading = false
 }: {
   data: any[];
   columns: ColumnDef<any>[];
   loading?: boolean;
+  status: string;
 }) => {
   const table = useReactTable({
     data,
@@ -68,6 +71,15 @@ const BaseTable = ({
                   <Spinner />
                 </TableCell>
               </TableRow>
+            ) : status == 'error' ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  <ErrorComponent onRetry={() => {}} />
+                </TableCell>
+              </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
@@ -77,7 +89,7 @@ const BaseTable = ({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="py-[32px] text-center text-slate-600"
+                      className=" text-center text-slate-600 md:py-[32px]"
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

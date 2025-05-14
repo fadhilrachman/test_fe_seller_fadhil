@@ -1,4 +1,3 @@
-import FormGenerator from '@/components/shared/form-generator';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog';
-import { useCreateDivision } from '@/hooks/useDivision';
 import React, { useEffect, useState } from 'react';
 interface Props {
   isOpen: boolean;
@@ -32,11 +30,7 @@ const DeleteDialog = (props: Props) => {
             'Delete this data? This will remove it from master data permanently'}
         </DialogDescription>
         <DialogFooter>
-          <Button
-            loading={props.loading}
-            variant={'ghost'}
-            onClick={props.onClose}
-          >
+          <Button variant={'ghost'} onClick={props.onClose}>
             Cancel
           </Button>
           <Button

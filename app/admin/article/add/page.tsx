@@ -1,7 +1,8 @@
+import CreateArticle from '@/modules/admin/article/create-article';
 import React from 'react';
 
 const CreateArticlePage = () => {
-  return <div className="rounded-lg border bg-gray-50 p-4">asdasd</div>;
+  return <CreateArticle />;
 };
 
 export default CreateArticlePage;

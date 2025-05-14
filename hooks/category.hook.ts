@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
 import { fetcher } from '@/lib/fetcher';
 import { BaseResponseList } from '@/types';
 import { useToast } from '@/components/ui/use-toast';
@@ -31,6 +30,23 @@ export const usePostCreateCategory = () => {
   });
 
   return mutation;
+};
+
+export const useGetCategoryUser = (params: {
+  page: number;
+  per_page: number;
+  search?: string;
+}) => {
+  const query = useQuery<BaseResponseList<CategoryType>>({
+    queryKey: ['LIST_CATEGORY_USER'],
+    queryFn: async () => {
+      const result = await fetcher.get('/user/category', { params });
+
+      return result.data;
+    }
+  });
+
+  return query;
 };
 
 export const useGetCategory = (params: {
@@ -66,11 +82,11 @@ export const usePutEditCategory = (id: string) => {
   return mutation;
 };
 
-export const useDeleteCategory = (id: string) => {
+export const useDeleteCategory = () => {
   const queryClient = useQueryClient();
-  const mutation = useMutation<any, Error>({
-    mutationFn: async () => {
-      const result = await fetcher.delete(`/category/${id}`);
+  const mutation = useMutation<any, Error, { id: string }>({
+    mutationFn: async (body) => {
+      const result = await fetcher.delete(`/admin/category/${body.id}`);
 
       return result.data;
     },

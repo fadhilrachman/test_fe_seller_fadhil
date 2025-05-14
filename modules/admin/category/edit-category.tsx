@@ -59,11 +59,7 @@ const EditCategory = (props: Props) => {
           ]}
         />
         <DialogFooter>
-          <Button
-            loading={status == 'pending'}
-            variant={'ghost'}
-            onClick={props.onClose}
-          >
+          <Button variant={'ghost'} onClick={props.onClose}>
             Cancel
           </Button>
           <Button type="submit" form="formEdit" loading={status == 'pending'}>

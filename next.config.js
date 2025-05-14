@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/article',
+        permanent: true // atau false
+      }
+    ];
+  },
   images: {
     domains: ['utfs.io', 'mycbuckethris.s3.ap-southeast-2.amazonaws.com'],
     remotePatterns: [

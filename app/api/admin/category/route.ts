@@ -5,17 +5,17 @@ import { createPagination } from '@/lib/pagination-server';
 import { verifyToken } from '@/lib/verify-token-server';
 
 export async function POST(req: NextRequest) {
-  //   if (verifyToken(req)) {
-  //     return Response.json(
-  //       {
-  //         status: 403,
-  //         message: "Access Denied. No token provided.",
-  //       },
-  //       {
-  //         status: 403,
-  //       }
-  //     );
-  //   }
+  if (verifyToken(req)) {
+    return Response.json(
+      {
+        status: 403,
+        message: 'Access Denied. No token provided.'
+      },
+      {
+        status: 403
+      }
+    );
+  }
 
   const { name } = await req.json();
 
@@ -46,6 +46,17 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  if (verifyToken(req)) {
+    return Response.json(
+      {
+        status: 403,
+        message: 'Access Denied. No token provided.'
+      },
+      {
+        status: 403
+      }
+    );
+  }
   const { searchParams } = new URL(req.url);
   const page = Number(searchParams.get('page') || 1);
   const per_page = Number(searchParams.get('per_page') || 10);

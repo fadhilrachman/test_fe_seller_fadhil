@@ -2,7 +2,7 @@ import React from 'react';
 
 const SckeletonArticle = () => {
   return (
-    <div className="w-full max-w-sm animate-pulse rounded-xl border p-4">
+    <div className="w-full max-w-sm animate-pulse rounded-xl  p-4">
       <div className="mb-4 h-48 w-full rounded-lg bg-gray-200" />
       <div className="mb-2 h-4 w-24 rounded bg-gray-200" /> {/* Date */}
       <div className="mb-2 h-6 w-3/4 rounded bg-gray-300" /> {/* Title */}

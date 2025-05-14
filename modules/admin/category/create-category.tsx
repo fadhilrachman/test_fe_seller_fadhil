@@ -1,4 +1,6 @@
-import FormGenerator from '@/components/shared/form-generator';
+import FormGenerator, {
+  DataFormType
+} from '@/components/shared/form-generator';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -32,6 +34,21 @@ const CreateCategory = (props: Props) => {
     }
   };
 
+  const dataForm: DataFormType[] = [
+    {
+      name: 'name',
+      type: 'text',
+      placeholder: 'Input category',
+      label: 'Category',
+      validation: {
+        required: {
+          value: true,
+          message: 'Please enter category'
+        }
+      }
+    }
+  ];
+
   return (
     <Dialog open={props.isOpen} onOpenChange={props.onClose}>
       <DialogContent className="">
@@ -43,27 +60,10 @@ const CreateCategory = (props: Props) => {
           form={form}
           id="formCreate"
           onSubmit={handleCreate}
-          data={[
-            {
-              name: 'name',
-              type: 'text',
-              placeholder: 'Input category',
-              label: 'Category',
-              validation: {
-                required: {
-                  value: true,
-                  message: 'Please enter category'
-                }
-              }
-            }
-          ]}
+          data={dataForm}
         />
         <DialogFooter>
-          <Button
-            loading={status == 'pending'}
-            variant={'ghost'}
-            onClick={props.onClose}
-          >
+          <Button variant={'ghost'} onClick={props.onClose}>
             Cancel
           </Button>
           <Button type="submit" form="formCreate" loading={status == 'pending'}>

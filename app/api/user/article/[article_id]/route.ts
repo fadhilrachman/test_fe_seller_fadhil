@@ -7,17 +7,17 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ article_id: string }> }
 ) {
-  // if (verifyToken(req)) {
-  //   return Response.json(
-  //     {
-  //       status: 403,
-  //       message: 'Access Denied'
-  //     },
-  //     {
-  //       status: 403
-  //     }
-  //   );
-  // }
+  if (verifyToken(req)) {
+    return Response.json(
+      {
+        status: 403,
+        message: 'Access Denied'
+      },
+      {
+        status: 403
+      }
+    );
+  }
   const { article_id } = await params;
 
   try {

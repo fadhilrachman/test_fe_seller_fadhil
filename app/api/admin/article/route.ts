@@ -5,19 +5,19 @@ import { createPagination } from '@/lib/pagination-server';
 import { verifyToken } from '@/lib/verify-token-server';
 
 export async function POST(req: NextRequest) {
-  //   if (verifyToken(req)) {
-  //     return Response.json(
-  //       {
-  //         status: 403,
-  //         message: "Access Denied. No token provided.",
-  //       },
-  //       {
-  //         status: 403,
-  //       }
-  //     );
-  //   }
+  if (verifyToken(req)) {
+    return Response.json(
+      {
+        status: 403,
+        message: 'Access Denied. No token provided.'
+      },
+      {
+        status: 403
+      }
+    );
+  }
 
-  const { content, thumbnail, title, category } = await req.json();
+  const { content, thumbnail, title, category_id } = await req.json();
 
   try {
     const result = await prisma.article.create({
@@ -25,9 +25,7 @@ export async function POST(req: NextRequest) {
         content,
         thumbnail,
         title,
-        category: {
-          connect: category.map((val: string) => ({ id: val }))
-        }
+        category_id
       }
     });
 

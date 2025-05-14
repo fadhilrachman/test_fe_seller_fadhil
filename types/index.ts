@@ -14,6 +14,11 @@ export interface BaseResponseList<T> {
   };
 }
 
+export interface BaseResponseDetail<T> {
+  message: string;
+  result: T;
+}
+
 export interface BaseResponse<T> {
   message: string;
   result: T;
