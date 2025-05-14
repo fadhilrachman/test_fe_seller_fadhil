@@ -1,59 +1,95 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/9113740/201498864-2a900c64-d88f-4ed4-b5cf-770bcb57e1f5.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/9113740/201498152-b171abb8-9225-487a-821c-6ff49ee48579.png">
-</picture>
+# 🚀 Web Article - Fullstack Next JS
 
-<div align="center"><strong>Next.js 14 Admin Dashboard Starter Template With Shadcn-ui</strong></div>
-<div align="center">Built with the Next.js App Router</div>
-<br />
-<div align="center">
-<a href="https://next-shadcn-dashboard-starter.vercel.app">View Demo</a>
-<span>
-</div>
+This my Frontend test using Next.js, Tailwind, ShadCN for a modern UI, and MySQL with Prisma for the backend. It features article management, category filtering, and smooth UI interactions.
 
-## Overview
+## 📦 How to Run
 
-This is a starter template using the following stack:
+### 1. Clone the Repository
 
-- Framework - [Next.js 14](https://nextjs.org/13)
-- Language - [TypeScript](https://www.typescriptlang.org)
-- Styling - [Tailwind CSS](https://tailwindcss.com)
-- Components - [Shadcn-ui](https://ui.shadcn.com)
-- Schema Validations - [Zod](https://zod.dev)
-- State Management - [Zustand](https://zustand-demo.pmnd.rs)
-- Auth - [Auth.js](https://authjs.dev/)
-- File Uploading - [Uploadthing](https://uploadthing.com)
-- Tables - [Tanstack Tables](https://ui.shadcn.com/docs/components/data-table)
-- Forms - [React Hook Form](https://ui.shadcn.com/docs/components/form)
-- Linting - [ESLint](https://eslint.org)
-- Pre-commit Hooks - [Husky](https://typicode.github.io/husky/)
-- Formatting - [Prettier](https://prettier.io)
+```bash
+git clone https://github.com/your-username/genzet-blog.git
+cd genzet-blog
+```
 
-_If you are looking for a React admin dashboard starter, here is the [repo](https://github.com/Kiranism/react-shadcn-dashboard-starter)._
+### 2. Install Dependencies
 
-## Pages
+```bash
+npm install
+```
 
-| Pages                                                                             | Specifications                                                                                        |
-| :-------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------- |
-| [Signup](https://next-shadcn-dashboard-starter.vercel.app/)                       | Authentication with **NextAuth** supports Social logins and email logins(Enter dummy email for demo). |
-| [Dashboard](https://next-shadcn-dashboard-starter.vercel.app/dashboard)           | Cards with recharts graphs for analytics.                                                             |
-| [Users](https://next-shadcn-dashboard-starter.vercel.app/dashboard/user)          | Tanstack tables with user details client side searching, pagination etc                               |
-| [Users/new](https://next-shadcn-dashboard-starter.vercel.app/dashboard/user/new)  | A User Form with Uploadthing to support file uploading with dropzone.                                 |
-| [Employee](https://next-shadcn-dashboard-starter.vercel.app/dashboard/employee)   | Tanstack tables with server side searching, pagination etc).                                          |
-| [Profile](https://next-shadcn-dashboard-starter.vercel.app/dashboard/profile)     | Mutistep dynamic forms using react-hook-form and zod for form validation.                             |
-| [Kanban Board](https://next-shadcn-dashboard-starter.vercel.app/dashboard/kanban) | A Drag n Drop task management board with dnd-kit and zustand to persist state locally.                |
-| [Not Found](https://next-shadcn-dashboard-starter.vercel.app/dashboard/notfound)  | Not Found Page Added in the root level                                                                |
-| -                                                                                 | -                                                                                                     |
+### 3. Configure Environment Variables
 
-## Getting Started
+Create a `.env` file in the root directory and add the following:
 
-Follow these steps to clone the repository and start the development server:
+```env
+DATABASE_URL=mysql://admin:Admin123!@hrisdev.cjog0guiewj0.ap-southeast-2.rds.amazonaws.com:3306/test_frontend_seller
+COOKIE_NAME=AuthToken
 
-- `git clone https://github.com/Kiranism/next-shadcn-dashboard-starter.git`
-- `npm install`
-- Create a `.env.local` file by copying the example environment file:
-  `cp env.example.txt .env.local`
-- Add the required environment variables to the `.env.local` file.
-- `npm run dev`
+AWS_ACCESS_KEY_ID=AKIAQFC27NP3HS3SFJME
+AWS_SECRET_ACCESS_KEY=U9sHJUjwkI5Tl8JIOYtOEl+7VkGbAqjMCcoTmmzN
+AWS_BUCKET_NAME=mycbuckethris
+AWS_REGION=ap-southeast-1
 
-You should now be able to access the application at http://localhost:3000.
+```
+
+### 4. Run Migrations (First-time setup only)
+
+```
+bash npx prisma migrate dev --name init
+```
+
+### 5. Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+### 6. Start Development Server
+
+```bash
+npm run dev
+```
+
+Visit the app at: [http://localhost:3000](http://localhost:3000)
+
+---
+
+## ⚙️ Tech & Tools Used
+
+### 🖥️ Frontend
+
+- **Next.js** – React framework with SSR and SSG support.
+- **Tailwind CSS** – Utility-first CSS framework.
+- **ShadCN UI** – Component library using Radix + Tailwind.
+- **React Query** – Data fetching & caching.
+- **React Hook Form** – Powerful form validation.
+
+### 🗄️ Backend
+
+- **MySQL** – Relational database.
+- **Prisma** – Type-safe ORM with schema-based migration system.
+
+---
+
+## 📁 Project Structure
+
+```
+/
+├── app/ or pages/         # Next.js route handlers
+│   └── api/               # API route handlers
+├── components/            # UI components
+├── modules/               # Collection of all JSX components used in app
+├── hooks/                 # Custom hooks (React Query, etc.)
+├── lib/                   # Utilities and helpers
+├── prisma/                # Prisma schema and migrations
+├── public/                # Static assets (images, icons, etc.)
+├── styles/                # Global CSS or Tailwind configs
+├── types/                 # TypeScript type definitions
+└── .env                   # Environment configuration
+```
+
+---
+
+## 🔗 API Documentation
+
+- Access the Postman collection [here](https://cuyy99.postman.co/workspace/CUYY-Workspace~e22cd32c-4cd3-4534-b3d7-811a6e43d394/collection/19580160-514ab391-720e-4e84-93aa-936d4f88fe5e?action=share&creator=19580160).
