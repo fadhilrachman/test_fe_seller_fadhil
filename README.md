@@ -83,7 +83,6 @@ Visit the app at: [http://localhost:3000](http://localhost:3000)
 ├── lib/                   # Utilities and helpers
 ├── prisma/                # Prisma schema and migrations
 ├── public/                # Static assets (images, icons, etc.)
-├── styles/                # Global CSS or Tailwind configs
 ├── types/                 # TypeScript type definitions
 └── .env                   # Environment configuration
 ```
