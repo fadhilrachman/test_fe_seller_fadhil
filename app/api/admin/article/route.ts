@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
 import { createPagination } from '@/lib/pagination-server';
@@ -6,7 +6,7 @@ import { verifyToken } from '@/lib/verify-token-server';
 
 export async function POST(req: NextRequest) {
   if (verifyToken(req)) {
-    return Response.json(
+    return NextResponse.json(
       {
         status: 403,
         message: 'Access Denied. No token provided.'
@@ -29,13 +29,13 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    return Response.json({
+    return NextResponse.json({
       status: 200,
       message: 'Success create article',
       result
     });
   } catch (error) {
-    return Response.json(
+    return NextResponse.json(
       {
         status: 500,
         message: 'Internal server error',
@@ -84,14 +84,14 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    return Response.json({
+    return NextResponse.json({
       status: 200,
       message: 'Success get article',
       result,
       pagination
     });
   } catch (error) {
-    return Response.json(
+    return NextResponse.json(
       {
         status: 500,
         message: 'Internal server error',

@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 import { prisma } from '@/lib/prisma';
 import { verifyToken } from '@/lib/verify-token-server';
@@ -8,7 +8,7 @@ export async function PUT(
   { params }: { params: { article_id: string } }
 ) {
   if (verifyToken(req)) {
-    return Response.json(
+    return NextResponse.json(
       {
         status: 403,
         message: 'Access Denied'
@@ -34,13 +34,13 @@ export async function PUT(
       }
     });
 
-    return Response.json({
+    return NextResponse.json({
       status: 200,
       message: 'Success update article',
       result
     });
   } catch (error) {
-    return Response.json(
+    return NextResponse.json(
       {
         status: 500,
         message: 'Internal server error',
@@ -58,7 +58,7 @@ export async function GET(
   { params }: { params: { article_id: string } }
 ) {
   if (verifyToken(req)) {
-    return Response.json(
+    return NextResponse.json(
       {
         status: 403,
         message: 'Access Denied'
@@ -80,13 +80,13 @@ export async function GET(
       }
     });
 
-    return Response.json({
+    return NextResponse.json({
       status: 200,
       message: 'Success get article',
       result
     });
   } catch (error) {
-    return Response.json(
+    return NextResponse.json(
       {
         status: 500,
         message: 'Internal server error',
@@ -104,7 +104,7 @@ export async function DELETE(
   { params }: { params: { article_id: string } }
 ) {
   if (verifyToken(req)) {
-    return Response.json(
+    return NextResponse.json(
       {
         status: 403,
         message: 'Access Denied'
@@ -123,13 +123,13 @@ export async function DELETE(
       }
     });
 
-    return Response.json({
+    return NextResponse.json({
       status: 200,
       message: 'Success delete article',
       result
     });
   } catch (error) {
-    return Response.json(
+    return NextResponse.json(
       {
         status: 500,
         message: 'Internal server error',
